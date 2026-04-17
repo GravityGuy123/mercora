@@ -1,0 +1,90 @@
+# =========================
+# Dependencies
+# =========================
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# =========================
+# Build / framework output
+# =========================
+/.next/
+/out/
+/build
+/.swc/
+/.turbo
+/dist
+
+# =========================
+# Testing / coverage
+# =========================
+/coverage
+/test-results
+/playwright-report
+/blob-report
+
+# =========================
+# Logs
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# =========================
+# Environment files
+# Keep example file committed
+# =========================
+.env*
+!.env.example
+
+# =========================
+# Deployment / hosting
+# =========================
+/.vercel
+
+# =========================
+# TypeScript / tooling
+# =========================
+*.tsbuildinfo
+next-env.d.ts
+
+# =========================
+# Cache / temporary files
+# =========================
+.eslintcache
+*.tmp
+*.temp
+
+# =========================
+# OS / system files
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Secrets / keys
+# =========================
+*.pem
+*.key
+
+# =========================
+# Editors / IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Local database / misc local files
+# Uncomment if you use them locally
+# =========================
+# *.sqlite
+# *.sqlite3
+# *.db

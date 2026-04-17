@@ -1,0 +1,369 @@
+mercora-frontend/
+├─ public/
+│  ├─ logos/
+│  ├─ icons/
+│  ├─ images/
+│  │  ├─ marketing/
+│  │  ├─ placeholders/
+│  │  └─ empty-states/
+│  ├─ og/
+│  ├─ manifest/
+│  └─ favicon.ico
+│
+├─ e2e/
+│  ├─ marketing.spec.ts
+│  ├─ auth.spec.ts
+│  ├─ onboarding.spec.ts
+│  ├─ merchant-dashboard.spec.ts
+│  ├─ merchant-orders.spec.ts
+│  ├─ manual-payment-flow.spec.ts
+│  ├─ managed-checkout-flow.spec.ts
+│  ├─ receipt-flow.spec.ts
+│  ├─ platform-admin.spec.ts
+│  └─ helpers/
+│
+├─ src/
+│  ├─ app/
+│  │  ├─ layout.tsx
+│  │  ├─ globals.css
+│  │  ├─ providers.tsx
+│  │  ├─ loading.tsx
+│  │  ├─ error.tsx
+│  │  ├─ not-found.tsx
+│  │  ├─ robots.ts
+│  │  ├─ sitemap.ts
+│  │  ├─ manifest.ts
+│  │  ├─ opengraph-image.tsx
+│  │  ├─ twitter-image.tsx
+│  │  │
+│  │  ├─ forbidden/
+│  │  │  └─ page.tsx
+│  │  ├─ unauthorized/
+│  │  │  └─ page.tsx
+│  │  │
+│  │  ├─ (marketing)/
+│  │  │  ├─ layout.tsx
+│  │  │  ├─ page.tsx
+│  │  │  ├─ features/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ pricing/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ how-it-works/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ about/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ contact/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ faq/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ book-demo/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ legal/
+│  │  │  │  ├─ privacy/
+│  │  │  │  │  └─ page.tsx
+│  │  │  │  ├─ terms/
+│  │  │  │  │  └─ page.tsx
+│  │  │  │  ├─ cookies/
+│  │  │  │  │  └─ page.tsx
+│  │  │  │  └─ refunds/
+│  │  │  │     └─ page.tsx
+│  │  │
+│  │  ├─ (auth)/
+│  │  │  ├─ layout.tsx
+│  │  │  ├─ sign-in/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ sign-up/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ verify-email/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ forgot-password/
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ reset-password/
+│  │  │  │  └─ [uid]/[token]/page.tsx
+│  │  │  ├─ invitation/
+│  │  │  │  └─ [token]/page.tsx
+│  │  │  └─ onboarding/
+│  │  │     ├─ layout.tsx
+│  │  │     ├─ page.tsx
+│  │  │     ├─ business/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ store/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ currency/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ payments/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ plan/
+│  │  │     │  └─ page.tsx
+│  │  │     └─ complete/
+│  │  │        └─ page.tsx
+│  │  │
+│  │  ├─ (merchant)/
+│  │  │  └─ dashboard/
+│  │  │     ├─ layout.tsx
+│  │  │     ├─ page.tsx
+│  │  │     ├─ loading.tsx
+│  │  │     ├─ analytics/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ catalog/
+│  │  │     │  ├─ products/
+│  │  │     │  │  ├─ page.tsx
+│  │  │     │  │  ├─ new/page.tsx
+│  │  │     │  │  └─ [productId]/page.tsx
+│  │  │     │  ├─ categories/
+│  │  │     │  │  └─ page.tsx
+│  │  │     │  └─ inventory/
+│  │  │     │     └─ page.tsx
+│  │  │     ├─ orders/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [orderId]/page.tsx
+│  │  │     ├─ customers/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [customerId]/page.tsx
+│  │  │     ├─ payments/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  ├─ manual/
+│  │  │     │  │  └─ page.tsx
+│  │  │     │  └─ [paymentId]/page.tsx
+│  │  │     ├─ settlements/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [recordId]/page.tsx
+│  │  │     ├─ payouts/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [batchId]/page.tsx
+│  │  │     ├─ receipts/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [receiptNumber]/page.tsx
+│  │  │     ├─ discounts/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ notifications/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ support/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  ├─ new/page.tsx
+│  │  │     │  └─ [ticketId]/page.tsx
+│  │  │     ├─ team/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ billing/
+│  │  │     │  └─ page.tsx
+│  │  │     └─ settings/
+│  │  │        ├─ page.tsx
+│  │  │        ├─ profile/page.tsx
+│  │  │        ├─ store/page.tsx
+│  │  │        ├─ branding/page.tsx
+│  │  │        ├─ domain/page.tsx
+│  │  │        ├─ checkout/page.tsx
+│  │  │        ├─ shipping/page.tsx
+│  │  │        ├─ policies/page.tsx
+│  │  │        ├─ payouts/page.tsx
+│  │  │        └─ payment-methods/page.tsx
+│  │  │
+│  │  ├─ (storefront)/
+│  │  │  └─ _stores/
+│  │  │     └─ [storeSlug]/
+│  │  │        ├─ layout.tsx
+│  │  │        ├─ page.tsx
+│  │  │        ├─ products/
+│  │  │        │  ├─ page.tsx
+│  │  │        │  └─ [productSlug]/page.tsx
+│  │  │        ├─ categories/
+│  │  │        │  └─ [categorySlug]/page.tsx
+│  │  │        ├─ search/
+│  │  │        │  └─ page.tsx
+│  │  │        ├─ cart/
+│  │  │        │  └─ page.tsx
+│  │  │        ├─ checkout/
+│  │  │        │  ├─ page.tsx
+│  │  │        │  ├─ pending/page.tsx
+│  │  │        │  ├─ success/page.tsx
+│  │  │        │  └─ failed/page.tsx
+│  │  │        ├─ payment/
+│  │  │        │  └─ manual/
+│  │  │        │     └─ [orderRef]/page.tsx
+│  │  │        ├─ order/
+│  │  │        │  └─ [orderRef]/page.tsx
+│  │  │        ├─ track/
+│  │  │        │  └─ page.tsx
+│  │  │        ├─ receipt/
+│  │  │        │  └─ [receiptNumber]/page.tsx
+│  │  │        ├─ contact/
+│  │  │        │  └─ page.tsx
+│  │  │        └─ policies/
+│  │  │           ├─ shipping/page.tsx
+│  │  │           ├─ refund/page.tsx
+│  │  │           ├─ privacy/page.tsx
+│  │  │           └─ terms/page.tsx
+│  │  │
+│  │  ├─ (platform)/
+│  │  │  └─ platform/
+│  │  │     ├─ layout.tsx
+│  │  │     ├─ page.tsx
+│  │  │     ├─ merchants/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [merchantId]/page.tsx
+│  │  │     ├─ stores/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [storeId]/page.tsx
+│  │  │     ├─ orders/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [orderId]/page.tsx
+│  │  │     ├─ payments/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [paymentId]/page.tsx
+│  │  │     ├─ disputes/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ settlements/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [recordId]/page.tsx
+│  │  │     ├─ payout-batches/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [batchId]/page.tsx
+│  │  │     ├─ receipts/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [receiptNumber]/page.tsx
+│  │  │     ├─ subscriptions/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [subscriptionId]/page.tsx
+│  │  │     ├─ notifications/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ support/
+│  │  │     │  ├─ page.tsx
+│  │  │     │  └─ [ticketId]/page.tsx
+│  │  │     ├─ analytics/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ audit-logs/
+│  │  │     │  └─ page.tsx
+│  │  │     ├─ provider-routing/
+│  │  │     │  └─ page.tsx
+│  │  │     └─ configuration/
+│  │  │        └─ page.tsx
+│  │  │
+│  │  └─ api/
+│  │     ├─ health/route.ts
+│  │     ├─ revalidate/route.ts
+│  │     └─ auth/
+│  │        ├─ logout/route.ts
+│  │        └─ refresh/route.ts
+│  │
+│  ├─ components/
+│  │  ├─ ui/
+│  │  ├─ icons/
+│  │  ├─ shared/
+│  │  ├─ shells/
+│  │  ├─ navigation/
+│  │  ├─ data-display/
+│  │  ├─ feedback/
+│  │  └─ forms/
+│  │
+│  ├─ features/
+│  │  ├─ auth/
+│  │  ├─ merchants/
+│  │  ├─ storefronts/
+│  │  ├─ catalog/
+│  │  ├─ customers/
+│  │  ├─ orders/
+│  │  ├─ payments/
+│  │  ├─ settlements/
+│  │  ├─ receipts/
+│  │  ├─ subscriptions/
+│  │  ├─ notifications/
+│  │  ├─ analytics/
+│  │  ├─ platform-admin/
+│  │  ├─ marketing/
+│  │  └─ support/
+│  │
+│  ├─ hooks/
+│  │  ├─ use-debounce.ts
+│  │  ├─ use-media-query.ts
+│  │  ├─ use-pagination.ts
+│  │  ├─ use-query-params.ts
+│  │  └─ use-copy.ts
+│  │
+│  ├─ lib/
+│  │  ├─ api/
+│  │  │  ├─ client.ts
+│  │  │  ├─ server.ts
+│  │  │  ├─ endpoints.ts
+│  │  │  ├─ errors.ts
+│  │  │  └─ tokens.ts
+│  │  ├─ auth/
+│  │  │  ├─ session.ts
+│  │  │  ├─ guards.ts
+│  │  │  ├─ permissions.ts
+│  │  │  └─ role-map.ts
+│  │  ├─ tenant/
+│  │  │  ├─ resolve-tenant.ts
+│  │  │  ├─ host-utils.ts
+│  │  │  └─ rewrite-storefront.ts
+│  │  ├─ formatting/
+│  │  │  ├─ currency.ts
+│  │  │  ├─ date.ts
+│  │  │  ├─ number.ts
+│  │  │  └─ status.ts
+│  │  ├─ constants/
+│  │  │  ├─ routes.ts
+│  │  │  ├─ navigation.ts
+│  │  │  ├─ roles.ts
+│  │  │  ├─ plans.ts
+│  │  │  ├─ currencies.ts
+│  │  │  └─ payment-statuses.ts
+│  │  ├─ schemas/
+│  │  │  ├─ auth.ts
+│  │  │  ├─ merchant.ts
+│  │  │  ├─ catalog.ts
+│  │  │  ├─ order.ts
+│  │  │  ├─ payment.ts
+│  │  │  ├─ receipt.ts
+│  │  │  └─ support.ts
+│  │  ├─ utils/
+│  │  │  ├─ cn.ts
+│  │  │  ├─ assert.ts
+│  │  │  ├─ download.ts
+│  │  │  └─ file.ts
+│  │  └─ telemetry/
+│  │     ├─ events.ts
+│  │     └─ logger.ts
+│  │
+│  ├─ providers/
+│  │  ├─ query-provider.tsx
+│  │  ├─ theme-provider.tsx
+│  │  ├─ auth-provider.tsx
+│  │  └─ modal-provider.tsx
+│  │
+│  ├─ stores/
+│  │  ├─ cart-store.ts
+│  │  ├─ checkout-store.ts
+│  │  └─ ui-store.ts
+│  │
+│  ├─ styles/
+│  │  ├─ tokens.css
+│  │  ├─ utilities.css
+│  │  └─ animations.css
+│  │
+│  ├─ types/
+│  │  ├─ api.ts
+│  │  ├─ auth.ts
+│  │  ├─ merchant.ts
+│  │  ├─ product.ts
+│  │  ├─ order.ts
+│  │  ├─ payment.ts
+│  │  ├─ receipt.ts
+│  │  ├─ settlement.ts
+│  │  └─ support.ts
+│  │
+│  └─ middleware.ts
+│
+├─ .env.example
+├─ .env.local
+├─ package.json
+├─ tsconfig.json
+├─ next.config.ts
+├─ middleware.ts
+├─ eslint.config.mjs
+├─ prettier.config.mjs
+├─ postcss.config.mjs
+├─ tailwind.config.ts
+├─ playwright.config.ts
+├─ vitest.config.ts
+├─ instrumentation.ts
+└─ README.md
