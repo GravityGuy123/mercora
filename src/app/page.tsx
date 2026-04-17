@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -64,18 +65,39 @@ const testimonials = [
       "Mercora brought everything together. I can sell, get paid, send receipts, and see my payouts clearly. It just works.",
     name: "Amina Yusuf",
     role: "Founder, Zuri & Co.",
+    image: "/images/testimonials/amina-yusuf.webp",
+    alt: "Portrait of Amina Yusuf",
   },
   {
     quote:
       "The receipts look professional and my customers trust me more. Settlements are clear and on time.",
     name: "Tunde Okafor",
     role: "CEO, TechMart NG",
+    image: "/images/testimonials/tunde-okafor.webp",
+    alt: "Portrait of Tunde Okafor",
   },
   {
     quote:
       "I used to juggle different tools. Now Mercora runs my business from storefront to settlement.",
     name: "Lilian Mwangi",
     role: "Owner, Lil’s Essentials",
+    image: "/images/testimonials/lilian-mwangi.webp",
+    alt: "Portrait of Lilian Mwangi",
+  },
+];
+
+const featuredProducts = [
+  {
+    name: "Leather Shoes",
+    price: "KSh 2,450",
+    image: "/images/leather-shoes.webp",
+    alt: "Premium leather shoes",
+  },
+  {
+    name: "Craft Basket",
+    price: "KSh 3,200",
+    image: "/images/craft-basket.webp",
+    alt: "Handwoven craft basket",
   },
 ];
 
@@ -95,9 +117,7 @@ export default function HomePage() {
           />
 
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,10,24,0.96)_0%,rgba(4,10,24,0.84)_22%,rgba(4,10,24,0.34)_54%,rgba(4,10,24,0.40)_100%)]" />
-
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,10,24,0.05)_0%,rgba(4,10,24,0.32)_100%)]" />
-
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,61,245,0.10),transparent_28%),radial-gradient(circle_at_84%_22%,rgba(59,130,246,0.08),transparent_20%)]" />
         </div>
 
@@ -156,26 +176,47 @@ export default function HomePage() {
                           <ShoppingBag className="h-4 w-4 text-slate-300" />
                         </div>
 
-                        <div className="mt-5 rounded-[24px] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_45%),linear-gradient(180deg,#2c1d40_0%,#1b1327_100%)] p-5">
-                          <div className="text-xs uppercase tracking-[0.14em] text-slate-300">
-                            New Collection
+                        <div className="relative mt-5 overflow-hidden rounded-[24px]">
+                          <div className="absolute inset-0">
+                            <Image
+                              src="/images/new-collection.webp"
+                              alt="Zuri & Co. new collection hero image"
+                              fill
+                              priority
+                              sizes="(max-width: 768px) 100vw, 320px"
+                              className="object-cover"
+                            />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_38%),linear-gradient(180deg,rgba(18,11,34,0.24)_0%,rgba(18,11,34,0.62)_100%)]" />
                           </div>
-                          <div className="mt-2 max-w-[180px] text-3xl font-semibold leading-tight text-white">
-                            Handcrafted for You
+
+                          <div className="relative z-10 p-5">
+                            <div className="text-xs uppercase tracking-[0.14em] text-slate-300">
+                              New Collection
+                            </div>
+                            <div className="mt-2 max-w-[180px] text-3xl font-semibold leading-tight text-white">
+                              Handcrafted for You
+                            </div>
+                            <button
+                              type="button"
+                              className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-slate-950"
+                            >
+                              Shop Now
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-slate-950"
-                          >
-                            Shop Now
-                          </button>
                         </div>
 
                         <div className="mt-4">
                           <div className="text-sm font-medium text-white">Featured</div>
                           <div className="mt-3 grid grid-cols-2 gap-3">
-                            <MiniProduct name="Leather Shoes" price="KSh 2,450" />
-                            <MiniProduct name="Craft Basket" price="KSh 3,200" />
+                            {featuredProducts.map((product) => (
+                              <MiniProduct
+                                key={product.name}
+                                name={product.name}
+                                price={product.price}
+                                image={product.image}
+                                alt={product.alt}
+                              />
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -183,11 +224,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="space-y-4">
-                    <MetricCard
-                      label="Today’s Sales"
-                      value="₦482,600"
-                      change="↑ 12.5%"
-                    />
+                    <MetricCard label="Today’s Sales" value="₦482,600" change="↑ 12.5%" />
 
                     <MetricCard
                       label="Pending Settlement"
@@ -410,10 +447,23 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 md:grid-cols-3">
-                  <DashboardStat title="Total Sales" value="₦1,560,250" meta="+ 8.4% vs. last week" />
-                  <DashboardStat title="Orders" value="2,847" meta="+ 6.1% vs. last week" />
-                  <DashboardStat title="Successful Payments" value="98.7%" meta="+ 0.3% vs. last week" />
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <DashboardStat
+                    className="sm:col-span-2"
+                    title="Total Sales"
+                    value="₦1,560,250"
+                    meta="+ 8.4% vs. last week"
+                  />
+                  <DashboardStat
+                    title="Orders"
+                    value="2,847"
+                    meta="+ 6.1% vs. last week"
+                  />
+                  <DashboardStat
+                    title="Successful Payments"
+                    value="98.7%"
+                    meta="+ 0.3% vs. last week"
+                  />
                 </div>
 
                 <div className="mt-6 grid gap-4 lg:grid-cols-[1.08fr_0.62fr]">
@@ -508,21 +558,27 @@ export default function HomePage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              {testimonials.map((item, index) => (
+              {testimonials.map((item) => (
                 <article
                   key={item.name}
                   className="rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,48,0.58),rgba(8,12,28,0.95))] p-5"
                 >
                   <p className="text-sm leading-7 text-slate-300">&ldquo;{item.quote}&rdquo;</p>
 
-                  <div className="mt-6 flex items-end justify-between gap-4">
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    </div>
+
                     <div>
                       <div className="text-sm font-semibold text-white">{item.name}</div>
                       <div className="mt-1 text-xs text-slate-400">{item.role}</div>
-                    </div>
-
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5b3df5_0%,#3b82f6_100%)] text-sm font-bold text-white">
-                      {index === 0 ? "AY" : index === 1 ? "TO" : "LM"}
                     </div>
                   </div>
                 </article>
@@ -569,10 +625,30 @@ export default function HomePage() {
   );
 }
 
-function MiniProduct({ name, price }: { name: string; price: string }) {
+function MiniProduct({
+  name,
+  price,
+  image,
+  alt,
+}: {
+  name: string;
+  price: string;
+  image: string;
+  alt: string;
+}) {
   return (
     <div className="overflow-hidden rounded-[18px] bg-[#111827]">
-      <div className="h-24 bg-[linear-gradient(135deg,#3d2a58_0%,#7b4b31_45%,#251727_100%)]" />
+      <div className="relative h-24 overflow-hidden">
+        <Image
+          src={image}
+          alt={alt}
+          fill
+          sizes="(max-width: 768px) 50vw, 160px"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,24,39,0.06)_0%,rgba(17,24,39,0.34)_100%)]" />
+      </div>
+
       <div className="space-y-1 px-3 py-3">
         <div className="text-xs font-medium text-white">{name}</div>
         <div className="text-xs text-slate-300">{price}</div>
@@ -628,15 +704,21 @@ function DashboardStat({
   title,
   value,
   meta,
+  className = "",
 }: {
   title: string;
   value: string;
   meta: string;
+  className?: string;
 }) {
   return (
-    <div className="rounded-[18px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,20,42,0.76),rgba(9,13,29,0.96))] px-4 py-4">
+    <div
+      className={`min-w-0 rounded-[18px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,20,42,0.76),rgba(9,13,29,0.96))] px-4 py-4 ${className}`}
+    >
       <div className="text-sm text-slate-400">{title}</div>
-      <div className="mt-2 text-3xl font-bold tracking-[-0.04em] text-white">{value}</div>
+      <div className="mt-2 text-[clamp(2rem,4vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white">
+        {value}
+      </div>
       <div className="mt-2 text-xs text-emerald-400">{meta}</div>
     </div>
   );

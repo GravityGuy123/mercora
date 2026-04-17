@@ -61,7 +61,7 @@ function BrandLockup() {
     >
       <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
           <Image
-            src="/images/logo.png"
+            src="/logo.png"
             alt="Mercora logo"
             fill
             priority
