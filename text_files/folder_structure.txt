@@ -367,3 +367,25 @@ mercora-frontend/
 ├─ vitest.config.ts
 ├─ instrumentation.ts
 └─ README.md
+
+
+
+
+
+src/
+├─ app/
+│  └─ (marketing)/
+│     └─ about/
+│        └─ page.tsx
+│
+├─ features/
+│  └─ marketing/
+│     └─ about/
+│        ├─ components/
+│        │  ├─ AboutHero.tsx
+│        │  ├─ AboutStory.tsx
+│        │  ├─ AboutValues.tsx
+│        │  └─ AboutCTA.tsx
+│        ├─ constants.ts
+│        ├─ data.ts
+│        └─ types.ts

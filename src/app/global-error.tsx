@@ -1,14 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import {
-  AlertOctagon,
-  Home,
-  LifeBuoy,
-  RefreshCw,
-  Sparkles,
-} from "lucide-react";
+import { AlertOctagon, Home, RefreshCcw } from "lucide-react";
+import { useEffect } from "react";
 
 type GlobalErrorPageProps = {
   error: Error & { digest?: string };
@@ -24,122 +18,93 @@ export default function GlobalErrorPage({
   }, [error]);
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-slate-950 text-white antialiased">
-        <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-950 to-slate-950">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(147,51,234,0.16),transparent_28%),radial-gradient(circle_at_80%_20%,rgba(217,70,239,0.14),transparent_22%),radial-gradient(circle_at_20%_80%,rgba(99,102,241,0.14),transparent_24%)]" />
-            <div className="absolute -left-16 top-16 h-72 w-72 rounded-full bg-purple-500/15 blur-3xl" />
-            <div className="absolute right-[-4rem] top-10 h-80 w-80 rounded-full bg-fuchsia-500/15 blur-3xl" />
-            <div className="absolute bottom-[-5rem] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl" />
+    <html lang="en">
+      <body className="min-h-screen bg-[#040A18] text-white antialiased">
+        <section className="relative isolate overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute left-0 top-0 h-[360px] w-[360px] rounded-full bg-red-500/10 blur-3xl" />
+            <div className="absolute right-0 top-[120px] h-[320px] w-[320px] rounded-full bg-indigo-500/10 blur-3xl" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_30%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,10,24,0.16)_0%,rgba(4,10,24,0.98)_100%)]" />
           </div>
 
-          <section className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
-            <div className="w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-[0_25px_100px_-40px_rgba(168,85,247,0.4)] backdrop-blur-xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(217,70,239,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_30%)]" />
-
-              <div className="relative p-6 sm:p-8 lg:p-10">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80">
-                  <Sparkles className="h-4 w-4 text-fuchsia-300" />
+          <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
+            <div className="grid w-full items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-red-200">
+                  <AlertOctagon className="h-4 w-4" />
                   Critical application error
                 </div>
 
-                <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.22em] text-purple-300">
-                      Global error
-                    </p>
+                <h1 className="mt-6 max-w-2xl text-3xl font-bold leading-tight tracking-[-0.04em] text-white sm:text-5xl">
+                  Something went seriously wrong.
+                </h1>
 
-                    <h1 className="mt-4 text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                      Something went seriously wrong
-                      <span className="block bg-gradient-to-r from-purple-300 via-fuchsia-300 to-indigo-300 bg-clip-text text-transparent">
-                        and the app could not recover.
-                      </span>
-                    </h1>
+                <p className="mt-5 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
+                  The app hit a global error and could not recover normally. Try
+                  resetting the app or return to the homepage.
+                </p>
 
-                    <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
-                      This affects the application shell itself, so the safest next
-                      steps are to retry, return to the homepage, or contact us if
-                      the issue continues.
-                    </p>
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#5b3df5_0%,#3b82f6_100%)] px-7 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(79,70,229,0.38)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(79,70,229,0.42)]"
+                  >
+                    <RefreshCcw className="h-4 w-4" />
+                    Reset application
+                  </button>
 
-                    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                      <button
-                        type="button"
-                        onClick={reset}
-                        className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/60"
-                      >
-                        Try Again
-                        <RefreshCw className="ml-2 h-4 w-4" />
-                      </button>
+                  <Link
+                    href="/"
+                    className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-white/14 bg-white/[0.03] px-6 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-white/[0.06]"
+                  >
+                    <Home className="h-4 w-4" />
+                    Go to homepage
+                  </Link>
+                </div>
+              </div>
 
-                      <Link
-                        href="/"
-                        className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-                      >
-                        Back to Home
-                        <Home className="ml-2 h-4 w-4" />
-                      </Link>
-
-                      <Link
-                        href="/contact"
-                        className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-                      >
-                        Contact Us
-                        <LifeBuoy className="ml-2 h-4 w-4" />
-                      </Link>
-                    </div>
+              <div className="relative mx-auto w-full max-w-[520px]">
+                <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,15,34,0.96),rgba(7,10,22,0.98))] shadow-[0_30px_80px_rgba(0,0,0,0.36)]">
+                  <div className="flex items-center gap-2 border-b border-white/10 px-5 py-4">
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
                   </div>
 
-                  <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-white/50">
-                          System status
-                        </p>
-                        <h2 className="mt-2 text-2xl font-bold text-white">
-                          Immediate guidance
-                        </h2>
-                      </div>
+                  <div className="p-6 sm:p-7">
+                    <div className="rounded-[24px] border border-red-500/15 bg-red-500/10 p-5">
+                      <p className="text-sm font-semibold text-white">
+                        Mercora runtime failure
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        A top-level exception interrupted rendering for this application
+                        shell.
+                      </p>
 
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 text-white shadow-lg shadow-purple-500/20">
-                        <AlertOctagon className="h-6 w-6" />
-                      </div>
+                      {error?.digest ? (
+                        <p className="mt-3 text-xs text-slate-400">
+                          Reference: {error.digest}
+                        </p>
+                      ) : null}
                     </div>
 
-                    <div className="mt-6 space-y-4">
-                      {[
-                        "Retry first in case the issue was temporary.",
-                        "Return to the homepage to restart navigation cleanly.",
-                        "Contact support if the same failure happens again.",
-                      ].map((item) => (
-                        <div
-                          key={item}
-                          className="rounded-2xl border border-white/10 bg-white/5 p-4"
-                        >
-                          <p className="text-sm leading-relaxed text-white/75">
-                            {item}
-                          </p>
-                        </div>
-                      ))}
+                    <div className="mt-5 rounded-[24px] border border-white/10 bg-white/[0.03] p-5">
+                      <p className="text-sm font-semibold text-white">
+                        Recommended action
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Reset the application first. If the issue continues, go back
+                        home and retry the affected path from a clean state.
+                      </p>
                     </div>
-
-                    {error.digest ? (
-                      <div className="mt-6 rounded-2xl border border-dashed border-white/10 bg-white/5 p-4">
-                        <p className="text-xs font-medium text-white/50">
-                          Error reference
-                        </p>
-                        <p className="mt-1 break-all text-sm font-semibold text-white/80">
-                          {error.digest}
-                        </p>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </div>
             </div>
-          </section>
-        </main>
+          </div>
+        </section>
       </body>
     </html>
   );

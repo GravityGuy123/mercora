@@ -1,3 +1,6 @@
+----------------------------------------------------
+FRONTEND
+----------------------------------------------------
 It needs to be Production grade, scalable, more virtually appealing with a professional look and feel, super responsive across all possible screen sizes, while maintaining the existing color scheme.
 
 Also be informed that the improvement i require is not just style based. Missing or yet to be added info that is totally necessary, ui or details is very critically important. One of the main goal is so the site doesn't look basic (production grade, super responsive across all possible screen sizes, very visually appealing professional look and feel)

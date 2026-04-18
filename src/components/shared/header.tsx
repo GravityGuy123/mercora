@@ -2,14 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
+  Building2,
+  CalendarDays,
   ChevronDown,
+  CircleHelp,
+  Mail,
   Menu,
   Receipt,
   ShieldCheck,
+  Sparkles,
   Store,
   Wallet,
   X,
@@ -26,11 +32,15 @@ type NavItem = {
   label: string;
   href?: string;
   children?: NavChild[];
+  dropdownAlign?: "left" | "right";
+  dropdownWidth?: string;
 };
 
 const navItems: NavItem[] = [
   {
     label: "Features",
+    dropdownAlign: "left",
+    dropdownWidth: "w-[460px]",
     children: [
       {
         label: "Storefronts",
@@ -59,11 +69,93 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Pricing", href: "/pricing" },
-  { label: "Solutions", href: "/solutions" },
-  { label: "Resources", href: "/resources" },
-  { label: "Contact", href: "/contact" },
+  { label: "How It Works", href: "/how-it-works" },
+  {
+    label: "Company",
+    dropdownAlign: "right",
+    dropdownWidth: "w-[460px]",
+    children: [
+      {
+        label: "About Mercora",
+        description:
+          "Learn what Mercora is building for modern merchants and why it exists.",
+        href: "/about",
+        icon: Building2,
+      },
+      {
+        label: "Contact",
+        description:
+          "Reach out for demos, pricing questions, support, and implementation enquiries.",
+        href: "/contact",
+        icon: Mail,
+      },
+      {
+        label: "FAQ",
+        description:
+          "Get clear answers to common questions about the platform and merchant workflows.",
+        href: "/faq",
+        icon: CircleHelp,
+      },
+      {
+        label: "Book Demo",
+        description:
+          "Schedule a walkthrough to see Mercora’s storefront, payments, and receipt flows clearly.",
+        href: "/book-demo",
+        icon: CalendarDays,
+      },
+    ],
+  },
 ];
 
+const dropdownMeta: Record<
+  string,
+  { title: string; description: string; icon: LucideIcon }
+> = {
+  Features: {
+    title: "Built for trust, speed, and operational clarity",
+    description:
+      "Premium storefronts, payment flow visibility, professional receipts, and merchant-grade reporting.",
+    icon: ShieldCheck,
+  },
+  Company: {
+    title: "Built for trust, clarity, and merchant growth",
+    description:
+      "Everything a serious commerce platform should communicate clearly — product direction, support, answers, and next steps.",
+    icon: Sparkles,
+  },
+};
+
+function normalizePath(pathname: string) {
+  if (!pathname) return "/";
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
+function matchesPath(pathname: string, href: string) {
+  const current = normalizePath(pathname);
+  const target = normalizePath(href);
+
+  if (target === "/") return current === "/";
+  return current === target || current.startsWith(`${target}/`);
+}
+
+function isNavItemActive(pathname: string, item: NavItem) {
+  if (item.href) {
+    return matchesPath(pathname, item.href);
+  }
+
+  if (item.children?.length) {
+    if (item.label === "Features") {
+      return matchesPath(pathname, "/features");
+    }
+
+    return item.children.some((child) => matchesPath(pathname, child.href));
+  }
+
+  return false;
+}
 
 function BrandMark() {
   return (
@@ -98,11 +190,15 @@ function BrandMark() {
 function DesktopDropdown({
   item,
   isOpen,
+  isActive,
+  pathname,
   onOpen,
   onClose,
 }: {
   item: NavItem;
   isOpen: boolean;
+  isActive: boolean;
+  pathname: string;
   onOpen: () => void;
   onClose: () => void;
 }) {
@@ -110,9 +206,15 @@ function DesktopDropdown({
     return null;
   }
 
+  const meta = dropdownMeta[item.label];
+  const MetaIcon = meta?.icon ?? ShieldCheck;
+  const alignmentClass =
+    item.dropdownAlign === "right" ? "right-0 left-auto" : "left-0 right-auto";
+  const widthClass = item.dropdownWidth ?? "w-[460px]";
+
   return (
     <div
-      className="relative pb-4 -mb-4"
+      className="relative -mb-4 pb-4"
       onMouseEnter={onOpen}
       onMouseLeave={onClose}
     >
@@ -122,8 +224,8 @@ function DesktopDropdown({
         aria-expanded={isOpen}
         aria-haspopup="menu"
         className={`inline-flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-          isOpen
-            ? "bg-white/10 text-white"
+          isOpen || isActive
+            ? "bg-white/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
             : "text-slate-200 hover:bg-white/8 hover:text-white"
         }`}
       >
@@ -136,54 +238,67 @@ function DesktopDropdown({
       </button>
 
       <div
-        className={`absolute left-0 top-full z-50 w-[460px] pt-3 transition-all duration-200 ${
+        className={`absolute top-full z-50 pt-3 transition-all duration-200 ${alignmentClass} ${widthClass} ${
           isOpen
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-2 opacity-0"
         }`}
       >
-        <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(5,11,28,0.96)] p-3 shadow-[0_30px_90px_rgba(2,6,23,0.45)] backdrop-blur-xl">
-          <div className="grid gap-2">
-            {item.children.map((child) => {
-              const Icon = child.icon;
+        <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[rgba(5,11,28,0.96)] shadow-[0_30px_90px_rgba(2,6,23,0.45)] backdrop-blur-xl">
+          <div className="max-h-[min(72vh,560px)] overflow-y-auto overscroll-contain p-3">
+            <div className="grid gap-2">
+              {item.children.map((child) => {
+                const Icon = child.icon;
+                const childActive = matchesPath(pathname, child.href);
 
-              return (
-                <Link
-                  key={child.label}
-                  href={child.href}
-                  className="group rounded-2xl border border-transparent p-3 transition hover:border-white/10 hover:bg-white/5"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600/15 text-blue-300 transition group-hover:bg-blue-600/20 group-hover:text-blue-200">
-                      <Icon className="h-5 w-5" />
+                return (
+                  <Link
+                    key={child.label}
+                    href={child.href}
+                    className={`group rounded-2xl border p-3 transition ${
+                      childActive
+                        ? "border-white/10 bg-white/8"
+                        : "border-transparent hover:border-white/10 hover:bg-white/5"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition ${
+                          childActive
+                            ? "bg-blue-600/20 text-blue-200"
+                            : "bg-blue-600/15 text-blue-300 group-hover:bg-blue-600/20 group-hover:text-blue-200"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-bold text-white">{child.label}</p>
+                        <p className="mt-1 text-sm leading-6 text-slate-300">
+                          {child.description}
+                        </p>
+                      </div>
                     </div>
+                  </Link>
+                );
+              })}
+            </div>
 
-                    <div>
-                      <p className="text-sm font-bold text-white">{child.label}</p>
-                      <p className="mt-1 text-sm leading-6 text-slate-300">
-                        {child.description}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+            <div className="mt-3 rounded-2xl border border-blue-500/20 bg-blue-600/10 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300">
+                  <MetaIcon className="h-5 w-5" />
+                </div>
 
-          <div className="mt-3 rounded-2xl border border-blue-500/20 bg-blue-600/10 p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-
-              <div>
-                <p className="text-sm font-bold text-white">
-                  Built for trust, speed, and operational clarity
-                </p>
-                <p className="mt-1 text-sm leading-6 text-slate-300">
-                  Premium storefronts, payment flow visibility, professional
-                  receipts, and merchant-grade reporting.
-                </p>
+                <div>
+                  <p className="text-sm font-bold text-white">
+                    {meta?.title ?? "Built for trust and operational clarity"}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-slate-300">
+                    {meta?.description ??
+                      "Mercora helps merchants operate with stronger structure, trust, and visibility."}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -194,6 +309,7 @@ function DesktopDropdown({
 }
 
 export default function Header() {
+  const pathname = usePathname() ?? "/";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -230,6 +346,7 @@ export default function Header() {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -256,11 +373,15 @@ export default function Header() {
             className="hidden items-center gap-1 lg:flex"
             aria-label="Main navigation"
           >
-            {navItems.map((item) =>
-              item.children?.length ? (
+            {navItems.map((item) => {
+              const itemActive = isNavItemActive(pathname, item);
+
+              return item.children?.length ? (
                 <DesktopDropdown
                   key={item.label}
                   item={item}
+                  pathname={pathname}
+                  isActive={itemActive}
                   isOpen={openMenu === item.label}
                   onOpen={() => setOpenMenu(item.label)}
                   onClose={() => setOpenMenu(null)}
@@ -269,24 +390,32 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href ?? "#"}
-                  className="rounded-full px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/8 hover:text-white"
+                  className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                    itemActive
+                      ? "bg-white/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
+                      : "text-slate-200 hover:bg-white/8 hover:text-white"
+                  }`}
                 >
                   {item.label}
                 </Link>
-              ),
-            )}
+              );
+            })}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="/login"
-              className="inline-flex min-h-11 items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/8 hover:text-white"
+              href="/sign-in"
+              className={`inline-flex min-h-11 items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                matchesPath(pathname, "/sign-in")
+                  ? "bg-white/10 text-white"
+                  : "text-slate-200 hover:bg-white/8 hover:text-white"
+              }`}
             >
               Log In
             </Link>
 
             <Link
-              href="/get-started"
+              href="/sign-up"
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#2563eb_0%,#3b82f6_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_40px_rgba(37,99,235,0.34)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_46px_rgba(37,99,235,0.42)]"
             >
               Get Started
@@ -338,71 +467,98 @@ export default function Header() {
 
           <div className="flex-1 overflow-y-auto px-5 py-6">
             <nav className="space-y-3" aria-label="Mobile navigation">
-              {navItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-3xl border border-white/10 bg-white/[0.03] p-2"
-                >
-                  {item.href ? (
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="block rounded-2xl px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/5"
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <div className="px-4 pb-2 pt-3 text-sm font-bold uppercase tracking-[0.14em] text-slate-400">
-                      {item.label}
-                    </div>
-                  )}
+              {navItems.map((item) => {
+                const itemActive = isNavItemActive(pathname, item);
 
-                  {item.children?.length ? (
-                    <div className="space-y-1 px-2 pb-2">
-                      {item.children.map((child) => {
-                        const Icon = child.icon;
+                return (
+                  <div
+                    key={item.label}
+                    className={`rounded-3xl border p-2 ${
+                      itemActive
+                        ? "border-white/15 bg-white/[0.05]"
+                        : "border-white/10 bg-white/[0.03]"
+                    }`}
+                  >
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                          itemActive
+                            ? "bg-white/[0.06] text-white"
+                            : "text-white hover:bg-white/5"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <div className="px-4 pb-2 pt-3 text-sm font-bold uppercase tracking-[0.14em] text-slate-400">
+                        {item.label}
+                      </div>
+                    )}
 
-                        return (
-                          <Link
-                            key={child.label}
-                            href={child.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="flex items-start gap-3 rounded-2xl px-3 py-3 transition hover:bg-white/5"
-                          >
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-600/15 text-blue-300">
-                              <Icon className="h-5 w-5" />
-                            </div>
+                    {item.children?.length ? (
+                      <div className="max-h-[45vh] space-y-1 overflow-y-auto px-2 pb-2">
+                        {item.children.map((child) => {
+                          const Icon = child.icon;
+                          const childActive = matchesPath(pathname, child.href);
 
-                            <div>
-                              <p className="text-sm font-semibold text-white">
-                                {child.label}
-                              </p>
-                              <p className="mt-1 text-xs leading-5 text-slate-300">
-                                {child.description}
-                              </p>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              ))}
+                          return (
+                            <Link
+                              key={child.label}
+                              href={child.href}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex items-start gap-3 rounded-2xl px-3 py-3 transition ${
+                                childActive
+                                  ? "bg-white/[0.07]"
+                                  : "hover:bg-white/5"
+                              }`}
+                            >
+                              <div
+                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
+                                  childActive
+                                    ? "bg-blue-600/20 text-blue-200"
+                                    : "bg-blue-600/15 text-blue-300"
+                                }`}
+                              >
+                                <Icon className="h-5 w-5" />
+                              </div>
+
+                              <div>
+                                <p className="text-sm font-semibold text-white">
+                                  {child.label}
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-slate-300">
+                                  {child.description}
+                                </p>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
             </nav>
           </div>
 
           <div className="border-t border-white/10 px-5 py-5">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Link
-                href="/login"
+                href="/sign-in"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className={`inline-flex min-h-12 items-center justify-center rounded-2xl border px-5 py-3 text-sm font-semibold transition ${
+                  matchesPath(pathname, "/sign-in")
+                    ? "border-white/15 bg-white/[0.08] text-white"
+                    : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }`}
               >
                 Log In
               </Link>
 
               <Link
-                href="/get-started"
+                href="/sign-up"
                 onClick={() => setMobileOpen(false)}
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb_0%,#3b82f6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_40px_rgba(37,99,235,0.34)] transition hover:bg-blue-500"
               >
