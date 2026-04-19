@@ -1,26 +1,33 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gravity-concepts.com";
+const baseUrl = "https://www.mercora.com";
+
+const publicRoutes = [
+  "",
+  "/features",
+  "/pricing",
+  "/how-it-works",
+  "/about",
+  "/contact",
+  "/faq",
+  "/book-demo",
+  "/legal/privacy",
+  "/legal/terms",
+  "/legal/cookies",
+  "/legal/refunds",
+  "/sign-in",
+  "/sign-up",
+  "/verify-email",
+  "/forgot-password",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = [
-    "",
-    "/about",
-    "/services",
-    "/portfolio",
-    "/contact",
-    "/blog",
-    "/testimonials",
-    "/support",
-    "/privacy-policy",
-    "/terms-of-service",
-  ];
+  const now = new Date();
 
-  return routes.map((path) => ({
-    url: `${SITE_URL}${path}`,
-    // optional — you can remove lastModified for static pages
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: path === "" ? 1 : 0.7,
+  return publicRoutes.map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: now,
+    changeFrequency: route === "" ? "weekly" : "monthly",
+    priority: route === "" ? 1 : route.startsWith("/legal/") ? 0.5 : 0.8,
   }));
 }

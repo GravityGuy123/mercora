@@ -1,31 +1,40 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gravity-concepts.com";
-
-// Vercel sets VERCEL_ENV = "production" | "preview" | "development"
-const isProd =
-  process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";
+const baseUrl = "https://www.mercora.com";
 
 export default function robots(): MetadataRoute.Robots {
-  // Block indexing for preview/development builds
-  if (!isProd) {
-    return {
-      rules: [{ userAgent: "*", disallow: "/" }],
-      sitemap: `${SITE_URL}/sitemap.xml`,
-      host: SITE_URL,
-    };
-  }
-
-  // Production rules
   return {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/api/", "/admin/", "/dashboard/", "/private/"],
+        allow: [
+          "/",
+          "/features",
+          "/pricing",
+          "/how-it-works",
+          "/about",
+          "/contact",
+          "/faq",
+          "/book-demo",
+          "/legal/privacy",
+          "/legal/terms",
+          "/legal/cookies",
+          "/legal/refunds",
+          "/sign-in",
+          "/sign-up",
+          "/verify-email",
+          "/forgot-password",
+        ],
+        disallow: [
+          "/onboarding/",
+          "/platform/",
+          "/dashboard/",
+          "/_stores/",
+          "/api/",
+        ],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

@@ -1,6 +1,17 @@
 ----------------------------------------------------
 FRONTEND
 ----------------------------------------------------
+I prefer my prompts to be in a single enclosed block with a copy button for easy coping.
+Strictly ensure to generate it within a single enclosed block with a copy button for easy coping.
+
+I need a direct, honest and accurately brutal evaluation and the best method to handle it
+
 It needs to be Production grade, scalable, more virtually appealing with a professional look and feel, super responsive across all possible screen sizes, while maintaining the existing color scheme.
 
 Also be informed that the improvement i require is not just style based. Missing or yet to be added info that is totally necessary, ui or details is very critically important. One of the main goal is so the site doesn't look basic (production grade, super responsive across all possible screen sizes, very visually appealing professional look and feel)
+
+I think there might have been a misunderstanding. When I said let's start with the public pages, when you get me a page, you are meant to get me whatever necessary i might need for it unless i have already received it. Like if you were getting me a page that requires logging in to access, all the authentication files etc (libs, hooks etc) required for logging in like axios.config, usecontext etc should also be generated as well like if i asked for a Django app, would you just give me the views.py and leave the models, urls, serializers etc. Also, when i said get me the next 10, is not strictly restricted to that category like just 10 public pages. If public runs out before the completion of the 10, you were meant to continue with the next category.
+
+When we started, I specifically said, "It needs to be Production grade, scalable, more virtually appealing with a professional look and feel, super responsive across all possible screen sizes, while maintaining the existing color scheme". Remind me again, what is production grade about using local storage.
+
+Out of all the codes for each App you gave me, doesn't any of them contain the logic/contract for the public cart, checkout, payment/manual, tracking, receipt/receipt number etc?
