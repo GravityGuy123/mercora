@@ -35,6 +35,20 @@ export const env = {
       memberships: (merchantId: string) =>
         `/api/merchants/${merchantId}/memberships/`,
     },
+    customers: {
+      list: (merchantId: string) =>
+        `/api/customers/merchants/${merchantId}/customers/`,
+      detail: (merchantId: string, customerId: string) =>
+        `/api/customers/merchants/${merchantId}/customers/${customerId}/`,
+      addresses: (merchantId: string, customerId: string) =>
+        `/api/customers/merchants/${merchantId}/customers/${customerId}/addresses/`,
+      addressDetail: (
+        merchantId: string,
+        customerId: string,
+        addressId: string,
+      ) =>
+        `/api/customers/merchants/${merchantId}/customers/${customerId}/addresses/${addressId}/`,
+    },
     storefronts: {
       list: "/api/storefronts/",
       detail: (storefrontId: string) => `/api/storefronts/${storefrontId}/`,
@@ -93,6 +107,7 @@ export const env = {
     forbidden: "/forbidden",
 
     merchantDashboard: "/dashboard",
+    merchantCustomers: "/dashboard/customers",
     merchantSettingsProfile: "/dashboard/settings/profile",
     merchantSettingsStore: "/dashboard/settings/store",
     merchantSettingsKyc: "/dashboard/settings/kyc",
