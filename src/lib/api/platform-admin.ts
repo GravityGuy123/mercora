@@ -3,11 +3,23 @@ import type {
   ApiEnvelope,
   PaginatedResponse,
   PlatformActionLog,
+  PlatformAnalyticsPayload,
+  PlatformConfigurationSummary,
   PlatformDashboardSummary,
   PlatformDispute,
   PlatformMerchant,
   PlatformMerchantModerationCase,
+  PlatformNotification,
+  PlatformNotificationsListPayload,
+  PlatformOrder,
+  PlatformPayment,
   PlatformPayoutBatch,
+  PlatformProviderRoutingListPayload,
+  PlatformProviderRoutingSetting,
+  PlatformReceipt,
+  PlatformSettlementRecord,
+  PlatformStorefront,
+  PlatformSubscription,
   PlatformSupportTicket,
 } from "@/types/platform-admin";
 
@@ -50,6 +62,36 @@ export const platformAdminApi = {
     } catch (error) {
       throw new Error(
         extractApiErrorMessage(error, "Unable to load platform dashboard."),
+      );
+    }
+  },
+
+  async analytics(days = 30, limit = 30) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformAnalyticsPayload> | PlatformAnalyticsPayload
+      >("/api/platform-admin/analytics/", {
+        params: { days, limit },
+      });
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform analytics."),
+      );
+    }
+  },
+
+  async configuration() {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformConfigurationSummary> | PlatformConfigurationSummary
+      >("/api/platform-admin/configuration/");
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform configuration."),
       );
     }
   },
@@ -108,6 +150,363 @@ export const platformAdminApi = {
     } catch (error) {
       throw new Error(
         extractApiErrorMessage(error, "Unable to apply merchant moderation."),
+      );
+    }
+  },
+
+  async listStorefronts(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    visibility?: string;
+    domain_status?: string;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<PaginatedResponse<PlatformStorefront>>(
+        "/api/platform-admin/stores/",
+        {
+          params: {
+            days: params?.days || undefined,
+            merchant_id: params?.merchant_id || undefined,
+            status: params?.status || undefined,
+            visibility: params?.visibility || undefined,
+            domain_status: params?.domain_status || undefined,
+            search: params?.search || undefined,
+          },
+        },
+      );
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform stores."),
+      );
+    }
+  },
+
+  async storefrontDetail(storeId: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformStorefront> | PlatformStorefront
+      >(`/api/platform-admin/stores/${storeId}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform store detail."),
+      );
+    }
+  },
+
+  async listOrders(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    payment_state?: string;
+    fulfillment_status?: string;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<PaginatedResponse<PlatformOrder>>(
+        "/api/platform-admin/orders/",
+        {
+          params: {
+            days: params?.days || undefined,
+            merchant_id: params?.merchant_id || undefined,
+            status: params?.status || undefined,
+            payment_state: params?.payment_state || undefined,
+            fulfillment_status: params?.fulfillment_status || undefined,
+            search: params?.search || undefined,
+          },
+        },
+      );
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform orders."),
+      );
+    }
+  },
+
+  async orderDetail(orderId: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformOrder> | PlatformOrder
+      >(`/api/platform-admin/orders/${orderId}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform order detail."),
+      );
+    }
+  },
+
+  async listPayments(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    provider?: string;
+    verification_status?: string;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<PaginatedResponse<PlatformPayment>>(
+        "/api/platform-admin/payments/",
+        {
+          params: {
+            days: params?.days || undefined,
+            merchant_id: params?.merchant_id || undefined,
+            status: params?.status || undefined,
+            provider: params?.provider || undefined,
+            verification_status: params?.verification_status || undefined,
+            search: params?.search || undefined,
+          },
+        },
+      );
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform payments."),
+      );
+    }
+  },
+
+  async paymentDetail(paymentId: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformPayment> | PlatformPayment
+      >(`/api/platform-admin/payments/${paymentId}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform payment detail."),
+      );
+    }
+  },
+
+  async listReceipts(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    provider?: string;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<PaginatedResponse<PlatformReceipt>>(
+        "/api/platform-admin/receipts/",
+        {
+          params: {
+            days: params?.days || undefined,
+            merchant_id: params?.merchant_id || undefined,
+            status: params?.status || undefined,
+            provider: params?.provider || undefined,
+            search: params?.search || undefined,
+          },
+        },
+      );
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform receipts."),
+      );
+    }
+  },
+
+  async receiptDetail(receiptNumber: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformReceipt> | PlatformReceipt
+      >(`/api/platform-admin/receipts/${receiptNumber}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform receipt detail."),
+      );
+    }
+  },
+
+  async listSettlements(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    provider?: string;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<
+        PaginatedResponse<PlatformSettlementRecord>
+      >("/api/platform-admin/settlements/", {
+        params: {
+          days: params?.days || undefined,
+          merchant_id: params?.merchant_id || undefined,
+          status: params?.status || undefined,
+          provider: params?.provider || undefined,
+          search: params?.search || undefined,
+        },
+      });
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform settlements."),
+      );
+    }
+  },
+
+  async settlementDetail(settlementId: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformSettlementRecord> | PlatformSettlementRecord
+      >(`/api/platform-admin/settlements/${settlementId}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform settlement detail."),
+      );
+    }
+  },
+
+  async listSubscriptions(params?: {
+    days?: number;
+    merchant_id?: string;
+    status?: string;
+    is_current?: boolean;
+    search?: string;
+  }) {
+    try {
+      const { data } = await apiClient.get<PaginatedResponse<PlatformSubscription>>(
+        "/api/platform-admin/subscriptions/",
+        {
+          params: {
+            days: params?.days || undefined,
+            merchant_id: params?.merchant_id || undefined,
+            status: params?.status || undefined,
+            is_current:
+              typeof params?.is_current === "boolean"
+                ? String(params.is_current)
+                : undefined,
+            search: params?.search || undefined,
+          },
+        },
+      );
+
+      return normalizePaginated(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform subscriptions."),
+      );
+    }
+  },
+
+  async subscriptionDetail(subscriptionId: string) {
+    try {
+      const { data } = await apiClient.get<
+        ApiEnvelope<PlatformSubscription> | PlatformSubscription
+      >(`/api/platform-admin/subscriptions/${subscriptionId}/`);
+
+      return unwrap(data);
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform subscription detail."),
+      );
+    }
+  },
+
+  async listNotifications(params?: {
+    days?: number;
+    merchant_id?: string;
+    category?: string;
+    severity?: string;
+    unread?: boolean;
+    archived?: boolean;
+    search?: string;
+  }): Promise<PlatformNotificationsListPayload> {
+    try {
+      const { data } = await apiClient.get<
+        PaginatedResponse<PlatformNotification> & {
+          summary?: PlatformNotificationsListPayload["summary"];
+        }
+      >("/api/platform-admin/notifications/", {
+        params: {
+          days: params?.days || undefined,
+          merchant_id: params?.merchant_id || undefined,
+          category: params?.category || undefined,
+          severity: params?.severity || undefined,
+          unread:
+            typeof params?.unread === "boolean" ? String(params.unread) : undefined,
+          archived:
+            typeof params?.archived === "boolean"
+              ? String(params.archived)
+              : undefined,
+          search: params?.search || undefined,
+        },
+      });
+
+      const normalized = normalizePaginated(data);
+      return {
+        count: normalized.count,
+        results: normalized.results,
+        summary: data.summary || null,
+      };
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load platform notifications."),
+      );
+    }
+  },
+
+  async listProviderRouting(params?: {
+    days?: number;
+    merchant_id?: string;
+    provider?: string;
+    is_enabled?: boolean;
+    is_visible_at_checkout?: boolean;
+    is_eligible?: boolean;
+    search?: string;
+  }): Promise<PlatformProviderRoutingListPayload> {
+    try {
+      const { data } = await apiClient.get<
+        PaginatedResponse<PlatformProviderRoutingSetting> & {
+          summary?: PlatformProviderRoutingListPayload["summary"];
+        }
+      >("/api/platform-admin/provider-routing/", {
+        params: {
+          days: params?.days || undefined,
+          merchant_id: params?.merchant_id || undefined,
+          provider: params?.provider || undefined,
+          is_enabled:
+            typeof params?.is_enabled === "boolean"
+              ? String(params.is_enabled)
+              : undefined,
+          is_visible_at_checkout:
+            typeof params?.is_visible_at_checkout === "boolean"
+              ? String(params.is_visible_at_checkout)
+              : undefined,
+          is_eligible:
+            typeof params?.is_eligible === "boolean"
+              ? String(params.is_eligible)
+              : undefined,
+          search: params?.search || undefined,
+        },
+      });
+
+      const normalized = normalizePaginated(data);
+      return {
+        count: normalized.count,
+        results: normalized.results,
+        summary: data.summary || [],
+      };
+    } catch (error) {
+      throw new Error(
+        extractApiErrorMessage(error, "Unable to load provider routing settings."),
       );
     }
   },

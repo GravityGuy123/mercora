@@ -1,0 +1,334 @@
+Best subscription structure
+
+Do not start with too many plans.
+
+Use 3 plans max.
+
+Recommended pricing logic
+
+You need a structure that feels cheap enough for African SMEs to try, but not so cheap that OrderLink becomes a low-trust bargain tool.
+
+My recommendation:
+
+1. Starter
+
+For small sellers testing online selling.
+
+Include:
+
+storefront
+product listing limit
+local merchant-direct payment
+order tracking
+receipt generation
+basic branding
+basic analytics
+
+Price target:
+
+₦5,000 to ₦8,000/month
+or annual discount equivalent
+
+This range is low enough to reduce resistance but high enough to avoid attracting only unserious users.
+
+2. Growth
+
+For merchants that want better conversion and managed checkout options.
+
+Include:
+
+everything in Starter
+Flutterwave checkout
+advanced order management
+more products
+custom branding improvements
+better analytics
+basic marketing tools
+
+Price target:
+
+₦12,000 to ₦20,000/month
+
+This is likely your real money plan.
+
+3. Pro / Business
+
+For serious brands.
+
+Include:
+
+priority support
+custom domain
+staff accounts
+advanced reporting
+better automation
+settlement visibility
+premium storefront features
+maybe lower platform transaction fee
+
+Price target:
+
+₦30,000 to ₦60,000/month
+
+This should target merchants already making meaningful sales.
+
+Best transaction fee structure
+
+Do not rely only on subscription.
+Do not rely only on transaction fees.
+
+Use a hybrid model:
+
+low monthly subscription
+plus platform fee only on OrderLink-managed payments
+
+That is the cleanest model.
+
+Recommended platform fee
+
+For OrderLink-managed payments:
+
+start with 1.5% to 3% platform fee
+on top of processor fees
+or include processor fees in final pricing display where needed
+
+For merchant-direct payments:
+
+do not take transaction commission at launch unless you are adding real financial value there
+instead make it part of subscription value
+
+This matters because Flutterwave already charges collection fees that vary by country and method. Their help center currently lists examples such as Nigeria local cards at 2.0% total, Ghana local cards at 2.6%, Kenya local cards at 3.2%, South Africa local cards at 2.9% + ZAR1, and many international card routes at 4.8%. Transfer and payout fees also vary by country, with Nigeria bank payouts listed at NGN 10, NGN 25, or NGN 50 depending on payout size.
+
+So if you add a heavy platform fee too early, merchants will feel punished.
+
+My honest recommendation:
+
+Starter plan: no extra OrderLink commission on merchant-direct local payments
+Growth/Pro: 1.5% to 2.5% platform fee on OrderLink-managed payments
+consider a lower fee for high-volume merchants
+What will make merchants lose interest
+
+These are the fastest merchant killers:
+
+Too expensive too early
+
+If you launch with something like:
+
+₦15,000+ starter
+plus 4% platform fee
+plus processor fee
+you will scare away small and mid-level merchants.
+Confusing settlement
+
+If a merchant cannot clearly answer:
+
+how much customer paid
+what Flutterwave took
+what OrderLink took
+what they are receiving
+when they will receive it
+
+they will distrust the platform.
+
+Forced platform custody for all payments
+
+Some merchants will prefer receiving local bank transfer directly. If you force everyone into your managed rails from day one, some will leave.
+
+Currency confusion
+
+If store prices jump around or settlement amounts look different from what they expected, trust breaks immediately.
+
+My best recommendation for pricing launch
+
+If you want adoption fast:
+
+Launch pricing suggestion
+
+Starter
+
+₦6,000/month
+merchant-direct payments
+receipts
+basic storefront
+no managed gateway required
+
+Growth
+
+₦15,000/month
+Flutterwave checkout enabled
+better analytics
+more products
+better branding/customization
+2% OrderLink fee on managed payments
+
+Pro
+
+₦35,000/month
+staff/team
+custom domain
+advanced analytics
+premium support
+lower managed-payment fee, maybe 1.5%
+
+This is commercially reasonable without feeling predatory.
+
+Default currency: how to handle it properly
+
+This is where many platforms get messy.
+
+You need one merchant default currency, but you should separate it from what the buyer sees and what the processor charges.
+
+The correct model
+
+Each store should have:
+
+1. Base currency
+This is the merchant’s home/store currency.
+Example: NGN.
+
+Use it for:
+
+merchant dashboard reporting
+product default pricing
+analytics
+settlement preference
+
+2. Display currency / presentment currency
+This is what the buyer sees on the storefront.
+
+Example:
+
+buyer browsing from abroad may choose USD display
+but the merchant’s base currency remains NGN
+
+3. Charge currency
+This is the actual currency used when payment is processed.
+
+This depends on:
+
+payment method
+processor support
+country support
+your gateway routing rules
+
+Flutterwave documents supported currencies and methods per region, such as NGN, GHS, KES, UGX, XAF, XOF, ZAR, GBP, EUR, and USD in certain supported collection contexts.
+
+4. Settlement currency
+This is what the merchant receives.
+
+That may match base currency, or not, depending on payout setup and gateway support.
+
+Best way to go about it at launch
+
+Keep it strict and simple:
+
+Launch rule
+
+Each merchant selects one default store currency during onboarding.
+
+Examples:
+
+Nigerian merchant → NGN
+Ghanaian merchant → GHS
+Kenyan merchant → KES
+
+That currency becomes:
+
+default product pricing currency
+dashboard currency
+order accounting currency
+
+Then add this logic:
+
+Buyer-side currency display
+
+You may allow the buyer to view prices in another currency, but only as an estimate unless you fully support charging in that currency.
+
+So:
+
+display converted estimate
+clearly label it as approximate if needed
+final checkout must show the actual charge currency before payment
+
+That protects trust.
+
+My strongest recommendation
+
+At first:
+
+allow one base currency per store
+allow optional display conversion
+only allow charge currencies that your payment backend can actually process cleanly
+do not allow merchants to randomly create product prices in five currencies at launch
+
+That would be a mistake.
+
+Best onboarding setup for currency
+
+During merchant onboarding, ask:
+
+country
+default business currency
+payout currency
+bank/payout country
+whether they want direct local payments, OrderLink-managed payments, or both
+
+Then backend rules should determine:
+
+what payment methods to show
+what charge currencies are allowed
+whether international checkout can be enabled
+whether settlement can happen automatically or manually
+
+That is far better than leaving everything open-ended.
+
+Settlement policy: best practice
+
+Do not settle instantly at launch.
+
+Use a settlement delay such as:
+
+T+3 to T+7 business days for new merchants
+shorter later for trusted merchants
+
+Flutterwave states settlement timelines vary by payment method, and successful transactions first appear as collection balance before being processed to a linked bank account or wallet.
+
+So your policy should be:
+
+buyer pays
+payment verified
+merchant sees pending settlement
+after hold window, merchant gets payout
+dashboard shows fees and net amount clearly
+
+This gives you room for:
+
+failed payouts
+refunds
+suspicious transactions
+disputes
+Best method overall
+
+If you want the best chance of success:
+
+Do this
+launch with merchant-direct + managed-payment hybrid
+set one base currency per store
+keep buyer currency switching mostly display-level at first
+use 3 plans max
+use hybrid revenue: subscription + managed-payment fee
+keep your platform fee modest
+make receipts automatic and trustworthy
+make settlement logic transparent in dashboard
+keep frontend extremely responsive, but let backend own financial truth
+Do not do this
+force all merchants into platform-managed payments immediately
+support unlimited currencies per merchant at launch
+let frontend calculate important financial totals
+charge aggressive fees too early
+build a visually polished platform with weak reconciliation underneath
+My direct recommendation in one line
+
+Launch with one store default currency, a hybrid payment model, modest subscription pricing, low platform fees on managed payments only, and a delayed transparent settlement system.
+
+That is the cleanest, safest, and most commercially sensible path.

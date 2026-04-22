@@ -1,11 +1,20 @@
 import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
+  BarChart3,
+  Bell,
   Building2,
   LayoutDashboard,
   LifeBuoy,
   ScrollText,
+  Settings2,
+  ShoppingBag,
+  Store,
   Wallet,
+  CreditCard,
+  ReceiptText,
+  Route,
+  Layers3,
 } from "lucide-react";
 
 export type PlatformNavItem = {
@@ -30,16 +39,71 @@ export const platformNavGroups: PlatformNavGroup[] = [
         icon: LayoutDashboard,
         exact: true,
       },
+      {
+        label: "Analytics",
+        href: "/platform-admin/analytics",
+        icon: BarChart3,
+      },
+      {
+        label: "Notifications",
+        href: "/platform-admin/notifications",
+        icon: Bell,
+      },
+      {
+        label: "Configuration",
+        href: "/platform-admin/configuration",
+        icon: Settings2,
+      },
+      {
+        label: "Provider Routing",
+        href: "/platform-admin/provider-routing",
+        icon: Route,
+      },
     ],
   },
   {
-    label: "Oversight",
+    label: "Commerce",
     items: [
       {
         label: "Merchants",
         href: "/platform-admin/merchants",
         icon: Building2,
       },
+      {
+        label: "Stores",
+        href: "/platform-admin/stores",
+        icon: Store,
+      },
+      {
+        label: "Orders",
+        href: "/platform-admin/orders",
+        icon: ShoppingBag,
+      },
+      {
+        label: "Payments",
+        href: "/platform-admin/payments",
+        icon: CreditCard,
+      },
+      {
+        label: "Receipts",
+        href: "/platform-admin/receipts",
+        icon: ReceiptText,
+      },
+      {
+        label: "Settlements",
+        href: "/platform-admin/settlements",
+        icon: Wallet,
+      },
+      {
+        label: "Subscriptions",
+        href: "/platform-admin/subscriptions",
+        icon: Layers3,
+      },
+    ],
+  },
+  {
+    label: "Risk & Operations",
+    items: [
       {
         label: "Payout Batches",
         href: "/platform-admin/payout-batches",

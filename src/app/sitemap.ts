@@ -15,7 +15,7 @@ const publicRoutes = [
   "/legal/terms",
   "/legal/cookies",
   "/legal/refunds",
-  "/sign-in",
+  "/login",
   "/sign-up",
   "/verify-email",
   "/forgot-password",

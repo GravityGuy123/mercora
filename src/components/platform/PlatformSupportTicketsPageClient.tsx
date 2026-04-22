@@ -2,9 +2,46 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, LifeBuoy, Loader2, Search } from "lucide-react";
+import { ArrowRight, LifeBuoy } from "lucide-react";
 import { formatDate, platformAdminApi } from "@/lib/api/platform-admin";
-import type { PlatformSupportTicket } from "@/types/platform-admin";
+import {
+  PlatformEmptyPanel,
+  PlatformErrorBanner,
+  PlatformLoadingPanel,
+  PlatformMetricTile,
+  PlatformTag,
+} from "@/components/platform/PlatformPrimitives";
+import type {
+  PlatformSupportMessageAuthorCustomer,
+  PlatformSupportMessageAuthorUser,
+  PlatformSupportTicket,
+} from "@/types/platform-admin";
+
+function safeText(value?: string | null) {
+  return value && value.trim() ? value : "—";
+}
+
+function formatUser(user?: PlatformSupportMessageAuthorUser | null) {
+  if (!user) return "—";
+
+  const fullName =
+    [user.first_name, user.last_name].filter(Boolean).join(" ").trim() ||
+    user.display_name ||
+    user.email;
+
+  return fullName || "—";
+}
+
+function formatCustomer(customer?: PlatformSupportMessageAuthorCustomer | null) {
+  if (!customer) return "—";
+
+  const fullName =
+    [customer.first_name, customer.last_name].filter(Boolean).join(" ").trim() ||
+    customer.full_name ||
+    customer.email;
+
+  return fullName || "—";
+}
 
 export default function PlatformSupportTicketsPageClient() {
   const [days, setDays] = useState(30);
@@ -43,7 +80,7 @@ export default function PlatformSupportTicketsPageClient() {
   }
 
   if (isLoading) {
-    return <LoadingPanel text="Loading platform support tickets..." />;
+    return <PlatformLoadingPanel text="Loading platform support tickets..." />;
   }
 
   return (
@@ -77,48 +114,32 @@ export default function PlatformSupportTicketsPageClient() {
               disabled={isRefreshing}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#5b3df5_0%,#3b82f6_100%)] px-5 text-sm font-semibold text-white"
             >
-              {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               Refresh
             </button>
           </div>
         </div>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_220px_220px_220px_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search ticket number, subject, email..."
-              className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-11 pr-4 text-sm text-white outline-none"
-            />
-          </div>
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search ticket number, subject, email..."
+            className="h-11 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none"
+          />
 
-          <select
+          <input
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-11 rounded-xl border border-white/10 bg-[#0b1224] px-4 text-sm text-white outline-none"
-          >
-            <option value="">All status</option>
-            <option value="open">Open</option>
-            <option value="in_progress">In progress</option>
-            <option value="waiting_on_customer">Waiting on customer</option>
-            <option value="waiting_on_merchant">Waiting on merchant</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-          </select>
+            placeholder="Status"
+            className="h-11 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none"
+          />
 
-          <select
+          <input
             value={priority}
             onChange={(event) => setPriority(event.target.value)}
-            className="h-11 rounded-xl border border-white/10 bg-[#0b1224] px-4 text-sm text-white outline-none"
-          >
-            <option value="">All priority</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
-          </select>
+            placeholder="Priority"
+            className="h-11 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none"
+          />
 
           <input
             value={category}
@@ -137,15 +158,11 @@ export default function PlatformSupportTicketsPageClient() {
         </div>
       </section>
 
-      {error ? (
-        <div className="rounded-[18px] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          {error}
-        </div>
-      ) : null}
+      {error ? <PlatformErrorBanner text={error} /> : null}
 
       <section className="space-y-4">
         {tickets.length === 0 ? (
-          <EmptyPanel text="No support tickets found." />
+          <PlatformEmptyPanel text="No support tickets found." />
         ) : (
           tickets.map((ticket) => (
             <Link
@@ -156,31 +173,44 @@ export default function PlatformSupportTicketsPageClient() {
               <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Tag>{ticket.ticket_number}</Tag>
-                    <Tag>{ticket.category}</Tag>
-                    <Tag>{ticket.priority}</Tag>
-                    <Tag>{ticket.status}</Tag>
+                    <PlatformTag>{safeText(ticket.ticket_number)}</PlatformTag>
+                    <PlatformTag>{safeText(ticket.category)}</PlatformTag>
+                    <PlatformTag>{safeText(ticket.priority)}</PlatformTag>
+                    <PlatformTag>{safeText(ticket.status)}</PlatformTag>
                   </div>
 
                   <h2 className="mt-4 text-xl font-semibold text-white">
-                    {ticket.subject}
+                    {safeText(ticket.subject)}
                   </h2>
 
                   <p className="mt-2 text-sm leading-7 text-slate-300">
-                    {ticket.description || "No description."}
+                    {safeText(ticket.description)}
                   </p>
 
                   <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-2">
-                    <div>Contact: {ticket.contact_email || ticket.contact_name || "—"}</div>
-                    <div>Last activity: {formatDate(ticket.last_activity_at || ticket.created_at)}</div>
+                    <div>
+                      Contact:{" "}
+                      {safeText(ticket.contact_email) !== "—"
+                        ? safeText(ticket.contact_email)
+                        : safeText(ticket.contact_name)}
+                    </div>
+                    <div>
+                      Customer: {formatCustomer(ticket.customer)}
+                    </div>
+                    <div>
+                      Last activity: {formatDate(ticket.last_activity_at || ticket.created_at)}
+                    </div>
+                    <div>
+                      Created by: {formatUser(ticket.created_by_user)}
+                    </div>
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 xl:min-w-[320px] xl:grid-cols-2">
-                  <MetricTile label="Merchant ID" value={ticket.merchant || "—"} />
-                  <MetricTile label="Assigned to" value={ticket.assigned_to || "—"} />
-                  <MetricTile label="Order ID" value={ticket.order || "—"} />
-                  <MetricTile label="Payment ID" value={ticket.payment || "—"} />
+                  <PlatformMetricTile label="Merchant ID" value={safeText(ticket.merchant)} />
+                  <PlatformMetricTile label="Assigned to" value={formatUser(ticket.assigned_to)} />
+                  <PlatformMetricTile label="Order ID" value={safeText(ticket.order)} />
+                  <PlatformMetricTile label="Payment ID" value={safeText(ticket.payment)} />
                 </div>
               </div>
 
@@ -193,41 +223,5 @@ export default function PlatformSupportTicketsPageClient() {
         )}
       </section>
     </main>
-  );
-}
-
-function Tag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300">
-      {children}
-    </span>
-  );
-}
-
-function MetricTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
-      <div className="text-xs uppercase tracking-[0.14em] text-slate-500">{label}</div>
-      <div className="mt-2 break-all text-sm font-semibold text-white">{value}</div>
-    </div>
-  );
-}
-
-function LoadingPanel({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-16 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-300">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-      <p className="mt-4 text-sm text-slate-300">{text}</p>
-    </div>
-  );
-}
-
-function EmptyPanel({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-12 text-center text-slate-300">
-      {text}
-    </div>
   );
 }

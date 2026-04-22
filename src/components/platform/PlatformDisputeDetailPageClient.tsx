@@ -3,9 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { formatDate, formatMoney, platformAdminApi } from "@/lib/api/platform-admin";
+import {
+  PlatformEmptyPanel,
+  PlatformErrorBanner,
+  PlatformJsonCard,
+  PlatformLoadingPanel,
+  PlatformTag,
+} from "@/components/platform/PlatformPrimitives";
 import type { PlatformDispute } from "@/types/platform-admin";
+
+function safeText(value?: string | null) {
+  return value && value.trim() ? value : "—";
+}
 
 export default function PlatformDisputeDetailPageClient() {
   const params = useParams<{ disputeId: string }>();
@@ -16,29 +27,29 @@ export default function PlatformDisputeDetailPageClient() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    void load();
+    const run = async () => {
+      setError("");
+      setIsLoading(true);
+
+      try {
+        const data = await platformAdminApi.disputeDetail(disputeId);
+        setDispute(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load dispute detail.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void run();
   }, [disputeId]);
 
-  async function load() {
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const data = await platformAdminApi.disputeDetail(disputeId);
-      setDispute(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to load dispute detail.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   if (isLoading) {
-    return <LoadingPanel text="Loading dispute detail..." />;
+    return <PlatformLoadingPanel text="Loading dispute detail..." />;
   }
 
   if (!dispute) {
-    return <EmptyPanel text="Dispute not found." />;
+    return <PlatformEmptyPanel text="Dispute not found." />;
   }
 
   return (
@@ -58,67 +69,53 @@ export default function PlatformDisputeDetailPageClient() {
         </div>
 
         <h1 className="mt-5 text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl">
-          {dispute.provider_dispute_id || dispute.id}
+          {safeText(dispute.provider_dispute_id || dispute.id)}
         </h1>
       </section>
 
-      {error ? (
-        <div className="rounded-[18px] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          {error}
-        </div>
-      ) : null}
+      {error ? <PlatformErrorBanner text={error} /> : null}
 
       <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,48,0.72),rgba(8,12,28,0.94))] p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <MetricRow label="Provider" value={dispute.provider} />
-          <MetricRow label="Status" value={dispute.status} />
-          <MetricRow label="Amount" value={formatMoney(dispute.amount, dispute.currency || "NGN")} />
-          <MetricRow label="Currency" value={dispute.currency || "—"} />
-          <MetricRow label="Reason" value={dispute.reason || "—"} />
-          <MetricRow label="Provider reason code" value={dispute.provider_reason_code || "—"} />
-          <MetricRow label="Payment ID" value={dispute.payment || "—"} />
-          <MetricRow label="Order ID" value={dispute.order || "—"} />
+          <MetricRow label="Provider" value={safeText(dispute.provider)} />
+          <MetricRow label="Status" value={safeText(dispute.status)} />
+          <MetricRow
+            label="Amount"
+            value={formatMoney(dispute.amount, dispute.currency || "NGN")}
+          />
+          <MetricRow label="Currency" value={safeText(dispute.currency)} />
+          <MetricRow label="Reason" value={safeText(dispute.reason)} />
+          <MetricRow
+            label="Provider reason code"
+            value={safeText(dispute.provider_reason_code)}
+          />
+          <MetricRow label="Payment ID" value={safeText(dispute.payment)} />
+          <MetricRow label="Order ID" value={safeText(dispute.order)} />
           <MetricRow label="Opened at" value={formatDate(dispute.opened_at)} />
           <MetricRow label="Evidence due" value={formatDate(dispute.evidence_due_at)} />
           <MetricRow label="Closed at" value={formatDate(dispute.closed_at)} />
           <MetricRow label="Created at" value={formatDate(dispute.created_at)} />
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
-          <div className="text-sm font-semibold text-white">Metadata</div>
-          <pre className="mt-3 whitespace-pre-wrap break-words text-xs leading-6 text-slate-300">
-            {JSON.stringify(dispute.metadata || {}, null, 2)}
-          </pre>
+        <div className="mt-6">
+          <PlatformJsonCard title="Metadata" value={dispute.metadata || {}} />
         </div>
       </section>
     </main>
   );
 }
 
-function MetricRow({ label, value }: { label: string; value: string }) {
+function MetricRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4">
       <div className="text-xs uppercase tracking-[0.14em] text-slate-400">{label}</div>
       <div className="mt-2 break-all text-sm font-semibold text-white">{value}</div>
-    </div>
-  );
-}
-
-function LoadingPanel({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-16 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-300">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-      <p className="mt-4 text-sm text-slate-300">{text}</p>
-    </div>
-  );
-}
-
-function EmptyPanel({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-12 text-center text-slate-300">
-      {text}
     </div>
   );
 }
