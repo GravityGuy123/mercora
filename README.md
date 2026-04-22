@@ -1,258 +1,518 @@
 # Mercora Frontend
 
-Mercora is a production-grade multi-role commerce SaaS platform built for African merchants and buyers.
+Mercora is a production-grade multi-role commerce SaaS frontend built with Next.js, TypeScript, and Tailwind CSS.
 
-This frontend powers:
+It powers five major product surfaces:
 
-- Marketing website
-- Authentication flows
-- Merchant dashboard
-- Public storefront
-- Platform admin interfaces
+- marketing website
+- authentication and onboarding
+- merchant workspace
+- public storefront buyer experience
+- platform admin workspace
 
-It is designed to be:
-
-- production-grade
-- scalable
-- highly responsive across all screen sizes and devices
-- visually polished
-- accessible
-- performant
-- tightly integrated with the Django backend
+This frontend is intentionally built as an operational commerce product, not a brochure site. It must feel trustworthy, fast, responsive, and financially clear across acquisition, checkout, merchant operations, and platform oversight.
 
 ---
 
-# Table of Contents
+## Table of Contents
 
 - [Project Overview](#project-overview)
-- [Core Product Areas](#core-product-areas)
-- [Key Product Goals](#key-product-goals)
+- [Product Positioning](#product-positioning)
+- [Current Frontend Scope](#current-frontend-scope)
 - [Tech Stack](#tech-stack)
-- [Frontend Responsibilities](#frontend-responsibilities)
-- [Design System Rules](#design-system-rules)
-- [Responsiveness Standards](#responsiveness-standards)
-- [Authentication Architecture](#authentication-architecture)
-- [Payment UX Strategy](#payment-ux-strategy)
-- [Multi-Provider Payment UX](#multi-provider-payment-ux)
-- [Currency Handling](#currency-handling)
-- [Frontend Information Architecture](#frontend-information-architecture)
-- [Suggested Folder Structure](#suggested-folder-structure)
+- [Architecture Overview](#architecture-overview)
+- [Current Route Map](#current-route-map)
+- [Application Layers](#application-layers)
+- [Authentication and Session Strategy](#authentication-and-session-strategy)
+- [Tenant and Storefront Strategy](#tenant-and-storefront-strategy)
+- [Payment Experience Model](#payment-experience-model)
+- [Money and Currency Rules](#money-and-currency-rules)
+- [Design System and UI Standards](#design-system-and-ui-standards)
+- [Responsiveness Rules](#responsiveness-rules)
+- [Accessibility Rules](#accessibility-rules)
+- [State Management Strategy](#state-management-strategy)
+- [API Integration Strategy](#api-integration-strategy)
 - [Environment Variables](#environment-variables)
 - [Getting Started](#getting-started)
 - [Development Commands](#development-commands)
-- [Routing Strategy](#routing-strategy)
-- [API Integration Rules](#api-integration-rules)
-- [State Management Guidance](#state-management-guidance)
-- [UI/UX Standards](#uiux-standards)
-- [Error / Loading / Empty States](#error--loading--empty-states)
-- [Accessibility Standards](#accessibility-standards)
+- [Suggested Working Conventions](#suggested-working-conventions)
+- [Error, Empty, and Loading States](#error-empty-and-loading-states)
 - [Performance Standards](#performance-standards)
-- [Security Considerations](#security-considerations)
-- [Deployment](#deployment)
-- [Testing Guidance](#testing-guidance)
-- [Engineering Rules](#engineering-rules)
-- [Long-Term Product Direction](#long-term-product-direction)
+- [Security Standards](#security-standards)
+- [Testing and QA Checklist](#testing-and-qa-checklist)
+- [Deployment Notes](#deployment-notes)
+- [Known Architectural Principles](#known-architectural-principles)
 
 ---
 
-# Project Overview
+## Project Overview
 
 Mercora is not just a storefront builder.
 
 Mercora is a commerce operating system for African merchants.
 
-Its core value proposition is:
+The frontend must communicate that clearly through:
 
-- storefront creation
-- order management
-- payment orchestration
-- trusted receipts
-- merchant settlement visibility
-- platform-managed checkout when necessary
+- structured acquisition pages
+- confidence-building onboarding
+- transparent checkout flows
+- merchant-side order, payment, receipt, and settlement visibility
+- platform-side operational oversight
 
-The frontend must support this reality clearly and professionally.
-
-The product should feel:
+The UI should consistently feel:
 
 - premium
+- stable
 - modern
+- mobile-first
 - operationally trustworthy
-- easy for small and medium merchants to understand
-- powerful enough for serious businesses to adopt
+- clear under pressure
 
 ---
 
-# Core Product Areas
+## Product Positioning
 
-## 1. Marketing Website
-Used for acquisition, trust-building, and conversion.
+Mercora’s strongest product truth is:
 
-Pages may include:
-- Landing
-- Features
-- Pricing
-- About
-- Contact
-- Legal pages
-- FAQ
-- Merchant onboarding CTA flows
+**storefront + order management + payment orchestration + receipt infrastructure + settlement visibility**
 
-## 2. Authentication
-Used for:
-- login
-- register
-- forgot password
-- reset password
-- role-aware redirects
-- session restoration
+That means the frontend should never behave like a lightweight template app.
 
-## 3. Merchant Dashboard
-Used by merchants to:
-- manage storefront
-- manage products
-- manage customers
-- manage orders
-- view transactions
-- confirm manual payments
-- track settlements
-- retrieve receipts
-- manage subscriptions
-- access analytics
+Every major surface should reinforce:
 
-## 4. Public Storefront
-Used by buyers to:
-- browse store
-- view products
-- add to cart
-- checkout
-- pay via available methods
-- upload payment proof for merchant-direct payment
-- track order
-- download/view receipt when allowed
-
-## 5. Platform Admin
-Used internally by the Mercora team to:
-- oversee merchants
-- review stores
-- monitor transactions
-- track settlement states
-- view support issues
-- manage platform health and reporting
+- selling is structured
+- payments are understandable
+- receipts are credible
+- settlement visibility matters
+- operations are traceable
 
 ---
 
-# Key Product Goals
+## Current Frontend Scope
 
-The frontend must help Mercora achieve the following:
+The current frontend architecture already covers the following major areas:
 
-- make merchants feel confident listing on the platform
-- make buyers trust the checkout flow
-- make payments understandable
-- make order state transparent
-- make receipts feel credible and structured
-- make subscriptions and upgrades easy to understand
-- make settlement visibility clear for merchants
-- make the platform feel premium and stable
+### 1. Marketing
+Public acquisition, trust, education, and conversion pages.
+
+### 2. Auth and Onboarding
+Login, sign-up, password recovery, invitation handling, onboarding flow, and role-aware access control.
+
+### 3. Merchant Workspace
+Dashboard home, catalog, orders, payments, settlements, subscriptions, receipts, customers, support, analytics, team, and settings.
+
+### 4. Public Storefront
+Tenant-aware buyer experience with store homepage, products, categories, search, cart, checkout, order tracking, manual payment proof flow, receipt access, contact, and policies.
+
+### 5. Platform Admin
+Platform-wide dashboards and control surfaces for merchants, stores, orders, payments, receipts, settlements, payouts, disputes, support tickets, notifications, analytics, subscriptions, and configuration.
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-Recommended/expected stack:
+Current and intended frontend stack:
 
-- Next.js
+- Next.js App Router
+- React
 - TypeScript
 - Tailwind CSS
-- React
-- App Router
-- Axios or fetch wrapper for API layer
-- next-themes if theme switching is needed
-- shadcn/ui only where appropriate
-- explicit Tailwind classes for stable styling
-- optional Zustand or equivalent for light client state
-- optional React Query / TanStack Query for server-state management
+- Axios-based API layer
+- Context providers for auth and merchant/storefront state
+- lightweight client stores for cart and checkout workflows
+- SEO metadata routes via App Router conventions
+- route handlers for auth refresh/logout, health, and revalidation
 
-Frontend should remain compatible with a Django + DRF backend.
+Optional or implementation-dependent tooling:
 
----
-
-# Frontend Responsibilities
-
-The frontend is responsible for:
-
-- rendering the UI
-- collecting user input
-- guiding flows
-- showing explicit states
-- presenting normalized payment options
-- handling responsive behavior
-- consuming backend APIs cleanly
-- maintaining current design language
-
-The frontend is NOT responsible for:
-
-- financial truth
-- fee calculations as source of truth
-- settlement authority
-- payment verification authority
-- receipt issuance authority
-- webhook logic
-- payout calculation authority
-
-Those belong to the backend.
+- query/state helpers for server-side data hydration
+- theme provider if dark/light mode remains enabled
+- shadcn/ui-style primitives where appropriate
 
 ---
 
-# Design System Rules
+## Architecture Overview
 
-The visual system must remain:
+The frontend is organized around product surfaces rather than random component sprawl.
+
+Top-level route groups currently include:
+
+- `src/app/(marketing)`
+- `src/app/(auth)`
+- `src/app/(merchant)`
+- `src/app/(storefront)`
+- `src/app/(platform-admin)`
+- `src/app/api`
+
+Supporting layers include:
+
+- `src/components`
+- `src/config`
+- `src/contexts`
+- `src/hooks`
+- `src/lib`
+- `src/providers`
+- `src/stores`
+- `src/styles`
+- `src/types`
+
+This keeps the application readable as it grows and avoids coupling marketing, storefront, merchant, and admin concerns into one flat folder.
+
+---
+
+## Current Route Map
+
+### App Root
+
+Core app files currently include:
+
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `src/app/error.tsx`
+- `src/app/global-error.tsx`
+- `src/app/loading.tsx`
+- `src/app/not-found.tsx`
+- metadata assets such as `manifest.ts`, `robots.ts`, `sitemap.ts`, `opengraph-image.tsx`, and `twitter-image.tsx`
+
+### Marketing Routes
+
+Current public marketing routes include:
+
+- `/`
+- `/about`
+- `/book-demo`
+- `/contact`
+- `/faq`
+- `/features`
+- `/how-it-works`
+- `/pricing`
+- `/legal/cookies`
+- `/legal/privacy`
+- `/legal/refunds`
+- `/legal/terms`
+
+### Auth Routes
+
+Current auth and onboarding routes include:
+
+- `/login`
+- `/sign-up`
+- `/forgot-password`
+- `/reset-password`
+- `/change-password`
+- `/verify-email`
+- `/invitation/[token]`
+- `/onboarding`
+- `/onboarding/business`
+- `/onboarding/currency`
+- `/onboarding/payments`
+- `/onboarding/plan`
+- `/onboarding/store`
+- `/onboarding/complete`
+
+### Merchant Workspace Routes
+
+Current merchant workspace is centered on `/dashboard` and includes:
+
+- `/dashboard`
+- `/dashboard/analytics`
+- `/dashboard/billing`
+- `/dashboard/catalog/categories`
+- `/dashboard/catalog/inventory`
+- `/dashboard/catalog/products`
+- `/dashboard/catalog/products/new`
+- `/dashboard/catalog/products/[productId]`
+- `/dashboard/customers`
+- `/dashboard/customers/[customerId]`
+- `/dashboard/discounts`
+- `/dashboard/notifications`
+- `/dashboard/orders`
+- `/dashboard/orders/[orderId]`
+- `/dashboard/payments`
+- `/dashboard/payments/manual`
+- `/dashboard/payments/[paymentId]`
+- `/dashboard/payouts`
+- `/dashboard/payouts/[batchId]`
+- `/dashboard/receipts`
+- `/dashboard/receipts/[receiptNumber]`
+- `/dashboard/settlements`
+- `/dashboard/settlements/[recordId]`
+- `/dashboard/settlements/payout-batches/[payoutBatchId]`
+- `/dashboard/subscriptions`
+- `/dashboard/subscriptions/invoices/[invoiceId]`
+- `/dashboard/support`
+- `/dashboard/support/new`
+- `/dashboard/support/[ticketId]`
+- `/dashboard/team`
+- `/dashboard/settings`
+- `/dashboard/settings/profile`
+- `/dashboard/settings/store`
+- `/dashboard/settings/branding`
+- `/dashboard/settings/domain`
+- `/dashboard/settings/checkout`
+- `/dashboard/settings/shipping`
+- `/dashboard/settings/policies`
+- `/dashboard/settings/payouts`
+- `/dashboard/settings/payment-methods`
+- `/dashboard/settings/kyc`
+
+### Public Storefront Routes
+
+The storefront is tenant-oriented under the `_stores` segment:
+
+- `/_stores/[storeSlug]`
+- `/_stores/[storeSlug]/products`
+- `/_stores/[storeSlug]/products/[productSlug]`
+- `/_stores/[storeSlug]/categories/[categorySlug]`
+- `/_stores/[storeSlug]/search`
+- `/_stores/[storeSlug]/cart`
+- `/_stores/[storeSlug]/checkout`
+- `/_stores/[storeSlug]/checkout/pending`
+- `/_stores/[storeSlug]/checkout/success`
+- `/_stores/[storeSlug]/checkout/failed`
+- `/_stores/[storeSlug]/payment/manual/[orderRef]`
+- `/_stores/[storeSlug]/order/[orderRef]`
+- `/_stores/[storeSlug]/track`
+- `/_stores/[storeSlug]/receipt/[receiptNumber]`
+- `/_stores/[storeSlug]/contact`
+- `/_stores/[storeSlug]/policies/privacy`
+- `/_stores/[storeSlug]/policies/refund`
+- `/_stores/[storeSlug]/policies/shipping`
+- `/_stores/[storeSlug]/policies/terms`
+
+### Platform Admin Routes
+
+Current platform admin workspace is centered on `/platform-admin` and includes:
+
+- `/platform-admin`
+- `/platform-admin/action-logs`
+- `/platform-admin/analytics`
+- `/platform-admin/configuration`
+- `/platform-admin/disputes`
+- `/platform-admin/disputes/[disputeId]`
+- `/platform-admin/merchants`
+- `/platform-admin/merchants/[merchantId]`
+- `/platform-admin/notifications`
+- `/platform-admin/orders`
+- `/platform-admin/orders/[orderId]`
+- `/platform-admin/payments`
+- `/platform-admin/payments/[paymentId]`
+- `/platform-admin/payout-batches`
+- `/platform-admin/payout-batches/[payoutBatchId]`
+- `/platform-admin/provider-routing`
+- `/platform-admin/receipts`
+- `/platform-admin/receipts/[receiptNumber]`
+- `/platform-admin/settlements`
+- `/platform-admin/settlements/[recordId]`
+- `/platform-admin/stores`
+- `/platform-admin/stores/[storeId]`
+- `/platform-admin/subscriptions`
+- `/platform-admin/subscriptions/[subscriptionId]`
+- `/platform-admin/support/tickets`
+- `/platform-admin/support/tickets/[ticketId]`
+
+### Internal App Route Handlers
+
+Current app route handlers include:
+
+- `/api/auth/logout`
+- `/api/auth/refresh`
+- `/api/health`
+- `/api/revalidate`
+
+---
+
+## Application Layers
+
+### `src/components`
+Domain-oriented UI components.
+
+Examples already present:
+
+- analytics
+- auth
+- customers
+- dashboard
+- merchant
+- notifications
+- platform
+- settlements
+- storefront
+- subscriptions
+- support
+- shared
+- ui
+
+### `src/config`
+Navigation and configuration maps such as merchant and platform navigation.
+
+### `src/contexts`
+Cross-cutting state for authenticated user, merchant scope, and storefront scope.
+
+### `src/hooks`
+Reusable hooks such as auth, merchant, storefront, debounce, pagination, media query, and query param utilities.
+
+### `src/lib`
+Core implementation utilities:
+
+- API clients
+- auth helpers and guards
+- env configuration
+- constants
+- formatters
+- schemas
+- telemetry helpers
+- tenant helpers
+- low-level utilities
+
+### `src/providers`
+Global React providers such as auth, modal, query, and theme providers.
+
+### `src/stores`
+Small client state containers for cart, checkout, and UI state.
+
+### `src/types`
+Typed domain contracts for auth, merchants, catalog, orders, payments, settlements, receipts, subscriptions, notifications, storefronts, public commerce, and platform admin.
+
+---
+
+## Authentication and Session Strategy
+
+The frontend should treat authentication as a backend-owned concern.
+
+Current architecture should assume:
+
+- the Django backend is the source of session truth
+- JWT/session handling must be backend-aligned
+- unsafe requests must respect CSRF requirements
+- the frontend must not treat a cached client flag as proof of authentication
+- route protection should be role-aware and server-truth-driven
+
+Production rules:
+
+- do not store sensitive auth state in local storage as source of truth
+- do not assume refresh success without backend confirmation
+- do not skip current-user/bootstrap checks
+- handle logged-out, expired, and unauthorized states separately
+
+Expected frontend auth flow:
+
+1. bootstrap session and CSRF context
+2. submit login or registration request
+3. refresh or bootstrap where required by backend flow
+4. fetch current user
+5. redirect by role and onboarding state
+
+---
+
+## Tenant and Storefront Strategy
+
+Mercora storefronts are tenant-aware.
+
+Frontend responsibilities include:
+
+- resolving storefront context from slug/host strategy
+- rendering store-specific public pages
+- isolating cart and checkout state by store
+- keeping storefront legal, contact, and policy pages tenant-scoped
+- ensuring receipt, order, and manual payment flows remain tied to the active storefront
+
+This is why tenant helpers exist under `src/lib/tenant` and storefront-specific types, hooks, and API clients are isolated instead of mixed into merchant components.
+
+---
+
+## Payment Experience Model
+
+Mercora uses a hybrid payment model.
+
+### 1. Merchant-Direct Payment
+
+Use when the merchant already collects local payments directly.
+
+Frontend behavior:
+
+- show merchant instructions clearly
+- present manual payment / proof submission cleanly
+- mark order as awaiting confirmation, not paid
+- avoid promising receipt issuance until payment is confirmed
+- show post-submission order tracking path
+
+### 2. Platform-Managed Payment
+
+Use when Mercora orchestrates secure checkout.
+
+Frontend behavior:
+
+- create payment session through backend
+- redirect or continue through provider-backed flow
+- never assume success from callback alone
+- fetch backend-confirmed payment state after redirect
+- show success, pending, and failed states explicitly
+
+Supported provider direction:
+
+- Flutterwave
+- Paystack
+- OPay-ready architecture
+
+The frontend must remain provider-aware at the UX layer but provider-agnostic at the domain layer.
+
+---
+
+## Money and Currency Rules
+
+The frontend must never become the financial source of truth.
+
+It can display money. It cannot authoritatively decide money.
+
+Key concepts that should remain explicit:
+
+- base currency
+- presentment currency
+- charge currency
+- settlement currency
+- gross amount
+- fees
+- net amount
+- refund amount
+- dispute amount
+
+Rules:
+
+- show the currency actually being charged
+- avoid fake or implied conversion guarantees
+- rely on backend-calculated financial values
+- keep receipts, settlements, and payouts visually unambiguous
+
+---
+
+## Design System and UI Standards
+
+Mercora’s frontend must remain:
 
 - premium
-- consistent
-- calm but powerful
+- polished
 - modern SaaS-grade
-- polished in both spacing and hierarchy
-- highly legible
-- responsive-first
+- readable
+- calm under high-information screens
+- visually consistent with the existing project direction
 
-Rules:
-- preserve the existing Mercora color direction
-- do not introduce random color systems
-- avoid generic template-looking UI
-- use clear section hierarchy
-- maintain consistent spacing rhythm
-- use clean surfaces and depth
-- keep cards, forms, tables, and action zones visually coherent
-- ensure dark mode depth is layered if dark mode is used
-- do not let mobile layouts feel secondary
+Non-negotiables:
+
+- do not introduce a new color system
+- do not redesign the visual identity casually
+- maintain clear hierarchy and spacing rhythm
+- ensure tables, filters, forms, and cards feel like one system
+- keep admin and merchant surfaces operational rather than decorative
 
 ---
 
-# Responsiveness Standards
+## Responsiveness Rules
 
-This project must be highly responsive across:
+Mercora is mobile-first, but not mobile-only.
 
-- small phones
-- standard phones
-- tablets
-- small laptops
-- laptops
-- desktops
-- ultrawide screens
-- awkward viewport widths
+All major pages should remain usable at:
 
-Rules:
-- mobile-first design
-- no broken tables on small devices
-- responsive nav patterns
-- responsive dashboard layouts
-- usable modals on mobile
-- proper spacing scaling
-- avoid horizontal overflow
-- avoid tiny tap targets
-- avoid desktop-only assumptions
-
-Every major page must be tested against:
 - 320px
 - 375px
 - 390px
@@ -262,221 +522,244 @@ Every major page must be tested against:
 - 1280px
 - 1440px
 - 1536px
-- ultrawide layouts where relevant
+- ultrawide where relevant
+
+Required standards:
+
+- no horizontal overflow
+- no unusable tables on phones
+- no tiny tap targets
+- drawers/sheets for mobile navigation where needed
+- responsive card and stats layouts
+- forms that remain usable on narrow widths
+- platform and merchant data screens that degrade gracefully on smaller screens
 
 ---
 
-# Authentication Architecture
+## Accessibility Rules
 
-Authentication uses backend-driven secure flows.
+Production-quality accessibility standards should include:
 
-Expected architecture:
-- Django backend issues JWT or auth cookies
-- frontend communicates with backend using credentials-enabled requests
-- CSRF must be handled correctly for unsafe methods when needed
-- frontend must restore session safely
-- frontend must not assume auth state without backend confirmation
-
-Expected auth flows:
-- register
-- login
-- logout
-- forgot password
-- reset password
-- current-user fetch
-- role-based redirection
-- protected route handling
-
-Frontend rules:
-- always handle logged-out state gracefully
-- show useful session-expired behavior
-- keep auth UX clear and calm
-- never expose sensitive internal auth assumptions in UI
+- semantic headings
+- explicit labels for all controls
+- keyboard-accessible menus, drawers, and dialogs
+- focus visibility on interactive controls
+- readable color contrast
+- loading and empty states that are understandable to non-visual users
+- descriptive button text instead of vague action labels
 
 ---
 
-# Payment UX Strategy
+## State Management Strategy
 
-Mercora supports a hybrid payment model.
+Mercora uses multiple state categories and they should stay separated.
 
-## Payment Mode 1: Merchant-Direct Local Payment
-Used when the merchant already receives local payments directly.
+### Server State
+Use typed API clients and query orchestration for remote data.
 
-Frontend behavior:
-- buyer selects merchant-direct payment
-- show merchant payment instructions clearly
-- allow payment proof upload or payment-sent marking if the backend supports it
-- show pending confirmation state
-- communicate that receipt is issued only after confirmation
-- show order tracking after submission
+### Cross-App UI Context
+Use contexts/providers for auth, current merchant, and current storefront.
 
-## Payment Mode 2: Mercora-Managed Payment
-Used when Mercora routes payment through supported providers.
+### Small Client State
+Use lightweight stores for:
 
-Frontend behavior:
-- buyer selects secure checkout
-- show eligible platform-managed providers
-- redirect or embed hosted payment flow based on provider strategy
-- show clear post-payment states
-- poll or fetch payment status only through backend endpoints
-- never assume success from redirect alone
-- show receipt only after backend-confirmed success
+- cart
+- checkout session drafting
+- temporary UI state
+
+Avoid turning client stores into shadow databases.
 
 ---
 
-# Multi-Provider Payment UX
+## API Integration Strategy
 
-Mercora backend supports:
+The frontend is tightly coupled to a Django + DRF backend through a domain-based API layer.
 
-## Phase 1
-- Flutterwave
-- Paystack
+Current API client areas include:
 
-## Future-ready
-- OPay
-
-Frontend must be designed so that:
-- provider selection is possible if business rules allow it
-- provider options are shown clearly and cleanly
-- users understand which method they are using
-- payment errors are recoverable
-- retries do not create duplicate confusion
-- provider-specific wording does not leak into core product architecture everywhere
-
-Important:
-- do not silently switch the buyer between providers without clear UX
-- do not treat redirect callback as final success
-- always rely on backend-confirmed status
-
----
-
-# Currency Handling
-
-Mercora supports multi-currency-aware commerce, but not as a loose UI toggle.
-
-Frontend must respect these concepts:
-
-- store base currency
-- display currency / presentment currency
-- charge currency
-- settlement currency
+- auth
+- analytics
+- catalog-public
+- customers
+- merchant-operations
+- merchants
+- notifications
+- payout-batches
+- platform-admin
+- public-commerce
+- storefront-public
+- storefronts
+- subscriptions
+- support
 
 Rules:
-- merchant chooses one base currency during onboarding
-- storefront may display alternate currency later if supported
-- final checkout must clearly show the actual charge currency
-- do not create misleading currency conversions
-- do not calculate authoritative money figures in frontend
+
+- keep domain clients separated
+- normalize errors at the API layer
+- keep request/response types explicit
+- do not scatter raw endpoint strings across UI components
+- do not mix storefront public flows with merchant private flows
+- do not make the frontend responsible for backend truth reconciliation
 
 ---
 
-# Frontend Information Architecture
+## Environment Variables
 
-Recommended route groups:
+### Required
 
-## Public / Marketing
-- `/`
-- `/features`
-- `/pricing`
-- `/about`
-- `/contact`
-- `/terms`
-- `/privacy`
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-## Auth
-- `/login`
-- `/register`
-- `/forgot-password`
-- `/reset-password`
+This should point to the Django backend origin, not just `/api`.
 
-## Merchant Dashboard
-- `/dashboard`
-- `/dashboard/orders`
-- `/dashboard/orders/[id]`
-- `/dashboard/products`
-- `/dashboard/products/new`
-- `/dashboard/products/[id]/edit`
-- `/dashboard/customers`
-- `/dashboard/customers/[id]`
-- `/dashboard/transactions`
-- `/dashboard/settlements`
-- `/dashboard/receipts`
-- `/dashboard/analytics`
-- `/dashboard/store-settings`
-- `/dashboard/billing`
-- `/dashboard/team`
-- `/dashboard/support`
-- `/dashboard/profile`
+Examples:
 
-## Storefront
-- `/store/[subdomain-or-slug]`
-- `/store/[slug]/product/[productSlug]`
-- `/store/[slug]/cart`
-- `/store/[slug]/checkout`
-- `/store/[slug]/order-success`
-- `/store/[slug]/track-order`
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=https://your-backend-domain.com
+```
 
-## Platform Admin
-- `/admin`
-- `/admin/merchants`
-- `/admin/merchants/[id]`
-- `/admin/stores`
-- `/admin/payments`
-- `/admin/settlements`
-- `/admin/analytics`
-- `/admin/support`
-- `/admin/settings`
+### Notes
+
+- use environment-specific files such as `.env.local` for local development
+- keep secrets out of public client variables
+- public env vars should only contain values safe for browser exposure
 
 ---
 
-# Suggested Folder Structure
+## Getting Started
 
-```txt
-src/
-  app/
-    (marketing)/
-    (auth)/
-    (merchant)/
-    (storefront)/
-    (platform-admin)/
-    api/
-    globals.css
-    layout.tsx
-    page.tsx
+1. Install dependencies.
+2. Create your local environment file.
+3. Point `NEXT_PUBLIC_API_URL` to the Django backend.
+4. Start the development server.
+5. Confirm that auth, merchant, storefront, and platform pages can all communicate with the backend.
 
-  components/
-    common/
-    layout/
-    marketing/
-    auth/
-    merchant/
-    storefront/
-    admin/
-    forms/
-    tables/
-    modals/
-    feedback/
+---
 
-  features/
-    auth/
-    merchants/
-    storefronts/
-    catalog/
-    orders/
-    payments/
-    receipts/
-    subscriptions/
-    analytics/
-    support/
+## Development Commands
 
-  lib/
-    api/
-    auth/
-    utils/
-    constants/
-    formatters/
-    guards/
+```bash
+npm install
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-  hooks/
-  types/
-  styles/
+If you use a different package manager, keep command equivalents consistent.
+
+---
+
+## Suggested Working Conventions
+
+When adding or changing frontend functionality:
+
+- keep route ownership strict
+- add types before wiring UI when the contract is new
+- keep platform admin concerns out of merchant components
+- keep merchant concerns out of public storefront code
+- keep marketing content free from dashboard assumptions
+- return full fixed files during implementation work
+- prefer exactness over abstraction for its own sake
+
+---
+
+## Error, Empty, and Loading States
+
+Every serious page should provide all three.
+
+### Loading
+
+- skeletons or stable loading panels
+- avoid layout shift where possible
+
+### Empty
+
+- tell the user what is missing
+- provide a next action where appropriate
+
+### Error
+
+- clear, calm language
+- retry path if possible
+- never expose raw backend internals in the UI unnecessarily
+
+---
+
+## Performance Standards
+
+Frontend performance expectations include:
+
+- fast first render for public pages
+- controlled bundle growth
+- selective client components only where necessary
+- route-based splitting through App Router
+- stable image/meta asset generation
+- minimal unnecessary re-renders in dashboard surfaces
+
+---
+
+## Security Standards
+
+Frontend security rules:
+
+- do not store auth truth in local storage
+- respect CSRF for unsafe methods
+- keep withCredentials behavior aligned to backend policy
+- do not trust redirect success for payments
+- do not expose privileged platform or merchant screens without backend-validated access
+- treat all financial and operational status as backend-owned truth
+
+---
+
+## Testing and QA Checklist
+
+Before considering a frontend change complete, verify:
+
+- marketing pages render and navigate correctly
+- auth flows handle logged-out, invalid, expired, and success states
+- merchant pages behave correctly when no merchant is active
+- storefront pages handle missing stores, empty carts, pending checkout, failed checkout, and successful checkout
+- platform pages handle list, detail, loading, error, and empty states
+- layouts remain stable across small and large screens
+- build passes without route/type errors
+
+Recommended checks:
+
+- `npm run lint`
+- `npm run build`
+- manual viewport sweep across mobile, tablet, laptop, and desktop
+
+---
+
+## Deployment Notes
+
+Recommended deployment shape:
+
+- frontend on Vercel or equivalent Next.js host
+- backend on Render or equivalent Django host
+- Postgres-backed production database
+- media and static assets handled according to backend deployment policy
+
+Deployment concerns:
+
+- ensure frontend origin is trusted by backend CORS/CSRF settings
+- ensure `NEXT_PUBLIC_API_URL` points to the correct backend origin
+- verify payment callbacks and post-payment UX against production URLs
+- verify SEO files, manifest, sitemap, and robots behavior in production
+
+---
+
+## Known Architectural Principles
+
+Mercora frontend should continue to respect these rules:
+
+- frontend is not financial truth
+- backend is authoritative for payment, receipt, and settlement state
+- domain boundaries matter
+- route groups should map to product surfaces cleanly
+- UI must remain production-grade and highly responsive
+- platform admin, merchant, storefront, and marketing should remain clearly separated
+- maintainability matters as much as appearance
