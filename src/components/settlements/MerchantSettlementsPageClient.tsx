@@ -10,6 +10,13 @@ import type {
   MerchantSettlementRecord,
   MerchantSettlementSummary,
 } from "@/types/merchant-operations";
+import {
+  EmptyState,
+  ErrorBanner,
+  LoadingState,
+  StatCard,
+  Tag,
+} from "@/components/merchant/MerchantOpsPrimitives";
 
 export default function MerchantSettlementsPageClient() {
   const { activeMerchant } = useMerchant();
@@ -153,11 +160,7 @@ export default function MerchantSettlementsPageClient() {
         </div>
       </section>
 
-      {error ? (
-        <div className="rounded-[18px] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          {error}
-        </div>
-      ) : null}
+      {error ? <ErrorBanner text={error} /> : null}
 
       <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <section className="space-y-6">
@@ -203,7 +206,7 @@ export default function MerchantSettlementsPageClient() {
 
             <div className="mt-6 space-y-3">
               {records.length === 0 ? (
-                <EmptyInline text="No settlement records found." />
+                <div className="text-sm text-slate-400">No settlement records found.</div>
               ) : (
                 records.map((record) => (
                   <div
@@ -224,7 +227,11 @@ export default function MerchantSettlementsPageClient() {
                           Eligible: {formatDate(record.eligible_at)}
                         </div>
                         <div className="mt-2 text-sm text-slate-300">
-                          Net: {formatMoney(record.net_amount, record.settlement_currency || currency)}
+                          Net:{" "}
+                          {formatMoney(
+                            record.net_amount,
+                            record.settlement_currency || currency,
+                          )}
                         </div>
                       </div>
 
@@ -292,7 +299,7 @@ export default function MerchantSettlementsPageClient() {
 
           <div className="mt-5 space-y-4">
             {batches.length === 0 ? (
-              <EmptyInline text="No payout batches found." />
+              <div className="text-sm text-slate-400">No payout batches found.</div>
             ) : (
               batches.map((batch) => (
                 <div
@@ -307,7 +314,10 @@ export default function MerchantSettlementsPageClient() {
 
                   <div className="mt-3 grid gap-2 text-sm text-slate-300">
                     <div>Records: {String(batch.total_records_count || 0)}</div>
-                    <div>Net amount: {formatMoney(batch.total_net_amount, batch.settlement_currency || currency)}</div>
+                    <div>
+                      Net amount:{" "}
+                      {formatMoney(batch.total_net_amount, batch.settlement_currency || currency)}
+                    </div>
                     <div>Scheduled: {formatDate(batch.scheduled_for)}</div>
                   </div>
 
@@ -361,44 +371,4 @@ export default function MerchantSettlementsPageClient() {
       </section>
     </main>
   );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4">
-      <div className="text-xs uppercase tracking-[0.14em] text-slate-400">{label}</div>
-      <div className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">{value}</div>
-    </div>
-  );
-}
-
-function Tag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300">
-      {children}
-    </span>
-  );
-}
-
-function LoadingState({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-16 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-300">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-      <p className="mt-4 text-sm text-slate-300">{text}</p>
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-12 text-center text-slate-300">
-      {text}
-    </div>
-  );
-}
-
-function EmptyInline({ text }: { text: string }) {
-  return <div className="text-sm text-slate-400">{text}</div>;
 }
