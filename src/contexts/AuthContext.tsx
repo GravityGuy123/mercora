@@ -49,7 +49,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
-    void refreshUser();
+    let mounted = true;
+
+    const run = async () => {
+      const user = await refreshUser();
+      if (!mounted) return;
+    };
+
+    run();
+
+    return () => {
+      mounted = false;
+    };
   }, [refreshUser]);
 
   useEffect(() => {
@@ -64,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [clearUser]);
 
-  const signIn = useCallback(async (payload: LoginPayload) => {
+  const login = useCallback(async (payload: LoginPayload) => {
     setStatus("loading");
     const nextUser = await authApi.login(payload);
     setUser(nextUser);
@@ -112,7 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isAuthenticated: status === "authenticated" && !!user,
       isLoading: status === "loading",
       refreshUser,
-      signIn,
+      login,
       signUp,
       signOut,
       forgotPassword,
@@ -123,7 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       status,
       refreshUser,
-      signIn,
+      login,
       signUp,
       signOut,
       forgotPassword,

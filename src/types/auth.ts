@@ -77,7 +77,7 @@ export type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   refreshUser: () => Promise<AuthUser | null>;
-  signIn: (payload: LoginPayload) => Promise<AuthUser>;
+  login: (payload: LoginPayload) => Promise<AuthUser>;
   signUp: (
     payload: RegisterPayload,
   ) => Promise<{ user: AuthUser | null; message: string }>;

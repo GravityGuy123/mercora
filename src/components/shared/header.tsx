@@ -37,37 +37,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  {
-    label: "Features",
-    dropdownAlign: "left",
-    dropdownWidth: "w-[460px]",
-    children: [
-      {
-        label: "Storefronts",
-        description: "Launch premium storefronts built for trust and conversion.",
-        href: "/features/storefronts",
-        icon: Store,
-      },
-      {
-        label: "Payments",
-        description: "Support merchant-direct and platform-managed payment flows.",
-        href: "/features/payments",
-        icon: Wallet,
-      },
-      {
-        label: "Receipts",
-        description: "Send structured receipts customers can trust.",
-        href: "/features/receipts",
-        icon: Receipt,
-      },
-      {
-        label: "Analytics",
-        description: "Track growth, sales, and settlement performance clearly.",
-        href: "/features/analytics",
-        icon: BarChart3,
-      },
-    ],
-  },
+  { label: "Features", href: "/features" },
   { label: "Pricing", href: "/pricing" },
   { label: "How It Works", href: "/how-it-works" },
   {
@@ -404,7 +374,7 @@ export default function Header() {
 
           <div className="hidden items-center gap-3 lg:flex">
             <Link
-              href="/sign-in"
+              href="/login"
               className={`inline-flex min-h-11 items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                 matchesPath(pathname, "/sign-in")
                   ? "bg-white/10 text-white"
@@ -546,7 +516,7 @@ export default function Header() {
           <div className="border-t border-white/10 px-5 py-5">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Link
-                href="/sign-in"
+                href="/login"
                 onClick={() => setMobileOpen(false)}
                 className={`inline-flex min-h-12 items-center justify-center rounded-2xl border px-5 py-3 text-sm font-semibold transition ${
                   matchesPath(pathname, "/sign-in")

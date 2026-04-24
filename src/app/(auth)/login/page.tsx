@@ -3,189 +3,324 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
+
+import { z } from "zod";
+
 import { useAuth } from "@/hooks/use-auth";
+import { extractApiErrorMessage } from "@/lib/api/axios";
 import { env } from "@/lib/config/env";
 
-type LoginFormState = {
-  email: string;
-  password: string;
+// ==============================
+// ZOD SCHEMA
+// ==============================
+
+export const loginSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export type LoginFormValues = z.infer<typeof loginSchema>;
+
+// ==============================
+// TYPES
+// ==============================
+
+type FormErrors = Partial<Record<keyof LoginFormValues, string>>;
+
+// ==============================
+// FLOATING INPUT
+// ==============================
+
+type FloatingInputProps = {
+  id: string;
+  name: string;
+  type: string;
+  label: string;
+  value: string;
+  error?: string;
+  autoComplete?: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  rightSlot?: React.ReactNode;
 };
 
-const initialState: LoginFormState = {
-  email: "",
-  password: "",
-};
+function FloatingInput({
+  id,
+  name,
+  type,
+  label,
+  value,
+  error,
+  autoComplete,
+  onChange,
+  required,
+  rightSlot,
+}: FloatingInputProps) {
+  const [focused, setFocused] = useState(false);
+  const lifted = focused || value.length > 0;
+
+  return (
+    <div>
+      <div
+        className={[
+          "relative rounded-xl border transition-all duration-200",
+          error
+            ? "border-red-500"
+            : focused
+            ? "border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
+            : "border-white/12 hover:border-white/25",
+        ].join(" ")}
+      >
+        <label
+          htmlFor={id}
+          className={[
+            "pointer-events-none absolute left-4 transition-all duration-200",
+            lifted
+              ? "top-2 text-[10px] font-semibold uppercase text-indigo-400"
+              : "top-1/2 -translate-y-1/2 text-sm text-slate-500",
+          ].join(" ")}
+        >
+          {label}
+        </label>
+
+        <input
+          id={id}
+          name={name}
+          type={type}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          required={required}
+          placeholder=""
+          className={[
+            "h-[58px] w-full rounded-xl bg-white/[0.03] px-4 text-sm text-white outline-none",
+            rightSlot ? "pr-20" : "",
+            lifted ? "pt-5 pb-1" : "",
+          ].join(" ")}
+        />
+
+        {rightSlot && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            {rightSlot}
+          </div>
+        )}
+      </div>
+
+      {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+// ==============================
+// FEATURES
+// ==============================
+
+const FEATURES = [
+  {
+    title: "Orders & customers",
+    desc: "View, manage, and action all your orders from one place.",
+  },
+  {
+    title: "Receipts & settlements",
+    desc: "Track every transaction with full financial visibility.",
+  },
+  {
+    title: "Merchant reporting",
+    desc: "Analytics and settings built for serious operators.",
+  },
+];
+
+// ==============================
+// PAGE
+// ==============================
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { signIn } = useAuth();
+  const { login, refreshUser } = useAuth();
 
-  const [form, setForm] = useState<LoginFormState>(initialState);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState<LoginFormValues>({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const nextUrl = useMemo(
-    () => searchParams.get("next") || env.routes.home,
-    [searchParams],
+    () => searchParams.get("next"),
+    [searchParams]
   );
 
-  const updateField = (field: keyof LoginFormState, value: string) => {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
+  const updateField = (field: keyof LoginFormValues, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
+  // ==============================
+  // VALIDATION (FIXED)
+  // ==============================
+
+  const validate = (): boolean => {
+    const result = loginSchema.safeParse(form);
+
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+
+    const fieldErrors: FormErrors = {};
+
+    result.error.issues.forEach((err) => {
+      const field = err.path[0] as keyof LoginFormValues;
+      fieldErrors[field] = err.message;
+    });
+
+    setErrors(fieldErrors);
+    return false;
+  };
+
+  // ==============================
+  // REDIRECT LOGIC
+  // ==============================
+
+  const resolveRedirect = (role: string) => {
+    if (nextUrl) return nextUrl;
+
+    switch (role) {
+      case "merchant_owner":
+      case "merchant_staff":
+        return "/merchant/dashboard";
+
+      case "platform_admin":
+      case "support_agent":
+        return "/platform-admin";
+
+      default:
+        return env.routes.home;
+    }
+  };
+
+  // ==============================
+  // SUBMIT
+  // ==============================
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormError("");
+
+    if (!validate()) return;
+
     setIsSubmitting(true);
 
     try {
-      await signIn({
+      await login({
         email: form.email.trim(),
         password: form.password,
       });
 
-      router.replace(nextUrl);
+      const user = await refreshUser();
+
+      if (!user) {
+        throw new Error("Authentication failed");
+      }
+
+      router.replace(resolveRedirect(user.role));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to log in.");
+      setFormError(extractApiErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ==============================
+  // UI
+  // ==============================
+
   return (
-    <main className="bg-[#040A18] text-white">
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute left-0 top-0 h-[360px] w-[360px] rounded-full bg-indigo-600/10 blur-3xl" />
-          <div className="absolute right-0 top-[120px] h-[320px] w-[320px] rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_32%)]" />
-        </div>
+    <main className="relative min-h-[calc(100vh-74px)] bg-[#06080F] text-white">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-14 lg:grid-cols-2">
 
-        <div className="relative mx-auto flex min-h-[calc(100vh-120px)] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
-          <div className="grid w-full items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-200">
-                <LockKeyhole className="h-4 w-4" />
-                Welcome back
+        {/* LEFT */}
+        <div>
+          <h1 className="text-4xl font-bold">
+            Your commerce hub{" "}
+            <span className="text-indigo-400">starts here</span>
+          </h1>
+
+          <p className="mt-4 text-slate-400">
+            Storefront. Payments. Receipts. Settlements. All in one place.
+          </p>
+
+          <div className="mt-8 space-y-3">
+            {FEATURES.map((f) => (
+              <div key={f.title}>
+                <p className="font-semibold">{f.title}</p>
+                <p className="text-sm text-slate-500">{f.desc}</p>
               </div>
-
-              <h1 className="mt-6 text-4xl font-bold leading-[1.03] tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl">
-                Log in to continue managing your commerce operations.
-              </h1>
-
-              <p className="mt-6 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
-                Access your storefront, payments, receipts, settlements, and merchant tools from one cleaner dashboard.
-              </p>
-
-              <div className="mt-8 space-y-3">
-                {[
-                  "Manage orders and customers",
-                  "Track receipts and settlements",
-                  "Access merchant reporting and settings",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3"
-                  >
-                    <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-300">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                    </div>
-                    <p className="text-sm leading-7 text-slate-300">{item}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mx-auto w-full max-w-[560px] overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,48,0.74),rgba(8,12,28,0.96))] shadow-[0_22px_60px_rgba(0,0,0,0.24)]">
-              <div className="border-b border-white/10 px-6 py-5">
-                <h2 className="text-2xl font-semibold tracking-[-0.03em] text-white">
-                  Log in
-                </h2>
-                <p className="mt-2 text-sm text-slate-400">
-                  Enter your account details to continue.
-                </p>
-              </div>
-
-              <form className="space-y-5 p-6 sm:p-7" onSubmit={handleSubmit}>
-                {error ? (
-                  <div className="rounded-[18px] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-                    {error}
-                  </div>
-                ) : null}
-
-                <div>
-                  <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-200">
-                    Email address
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    value={form.email}
-                    onChange={(event) => updateField("email", event.target.value)}
-                    placeholder="you@company.com"
-                    className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400/50 focus:bg-white/[0.06]"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between gap-4">
-                    <label htmlFor="password" className="block text-sm font-medium text-slate-200">
-                      Password
-                    </label>
-                    <Link
-                      href={env.routes.forgotPassword}
-                      className="text-sm font-medium text-indigo-300 transition hover:text-indigo-200"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={form.password}
-                    onChange={(event) => updateField("password", event.target.value)}
-                    placeholder="Enter your password"
-                    className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400/50 focus:bg-white/[0.06]"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#5b3df5_0%,#3b82f6_100%)] px-6 text-sm font-semibold text-white shadow-[0_16px_38px_rgba(79,70,229,0.34)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(79,70,229,0.42)] disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isSubmitting ? "Logging in..." : "Log In"}
-                  {!isSubmitting ? <ArrowRight className="h-4 w-4" /> : null}
-                </button>
-
-                <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4 text-center">
-                  <p className="text-sm text-slate-300">
-                    Don&apos;t have an account?{" "}
-                    <Link
-                      href={env.routes.signUp}
-                      className="font-semibold text-white transition hover:text-indigo-200"
-                    >
-                      Create one
-                    </Link>
-                  </p>
-                </div>
-              </form>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+
+        {/* RIGHT */}
+        <div className="rounded-2xl border border-white/10 p-8">
+          <h2 className="text-2xl font-bold">Log in</h2>
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+
+            {formError && (
+              <div className="text-red-400 text-sm">{formError}</div>
+            )}
+
+            <FloatingInput
+              id="email"
+              name="email"
+              type="email"
+              label="Email"
+              value={form.email}
+              error={errors.email}
+              onChange={(v) => updateField("email", v)}
+            />
+
+            <FloatingInput
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              value={form.password}
+              error={errors.password}
+              onChange={(v) => updateField("password", v)}
+              rightSlot={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="text-xs text-slate-400"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              }
+            />
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-12 bg-indigo-600 rounded-xl"
+            >
+              {isSubmitting ? "Signing in..." : "Continue"}
+            </button>
+
+            <p className="text-sm text-center text-slate-500">
+              No account?{" "}
+              <Link href={env.routes.signUp} className="text-white">
+                Sign up
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
     </main>
   );
 }

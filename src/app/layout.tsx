@@ -3,6 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
+import { Instrument_Serif, DM_Sans } from "next/font/google";
+
+// const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400", variable: "--font-serif" });
+// const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({
   subsets: ["latin"],
